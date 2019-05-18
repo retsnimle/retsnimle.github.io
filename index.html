@@ -1,0 +1,419 @@
+<html>
+
+<head>
+  <title>湯群漫畫推薦網
+  </title>
+  <link rel="stylesheet" type="text/css" href="http://xoxco.com/examples/jquery.tagsinput.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Noto+Sans+TC|Noto+Serif+TC" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+  <script src="http://xoxco.com/examples/jquery.tagsinput.js"></script>
+
+
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <style media="screen">
+    body {
+
+      font-family: 'Noto Sans TC', sans-serif;
+
+    }
+
+    .start_zyz{
+        cursor:pointer;
+    }
+
+  </style>
+
+</head>
+
+<body>
+  <div id="mainSearch">
+    <!-- Modal -->
+    <div class="modal fade" id="comicDetailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">選擇的漫畫</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id='comicDetail'>
+
+            <div class="media">
+              <img class="col-4" :src="selectData.BigPic" alt="Generic placeholder image">
+              <div class="media-body">
+                <h5 class="mt-0">{{selectData.Title}}</h5>
+                <p>{{selectData.Author.join()}}</p>
+                <p><span class="book-list-info-bottom-item" id="selectCategorys">{{selectData.Categorys}}</span>
+                  <span>(</span>
+                  <span class="book-list-info-bottom-right-font text-right" id="selectStatus">{{selectData.Status}}</span>
+                  <span>)</span>
+                </p>
+              </div>
+            </div>
+
+            <p class="book-list-info-desc" id="selectContent">{{selectData.Content}}</p>
+
+            <!-- <div class="media">
+              <div class="book-list-cover"><img class="book-list-cover-img hoverZoomLink" :src="selectData.BigPic" :alt="selectData.Title" id="selectCover"></div>
+              <div class="book-list-info media-body">
+                <h4 class="book-list-info-title" id="selectTitle">{{selectData.Title}}</h4>
+                <h6 id="selectAuthor">{{selectData.Author.join()}}</h6>
+                <p class="book-list-info-desc" id="selectContent">{{selectData.Content}}</p>
+                <p><span class="book-list-info-bottom-item" id="selectCategorys">{{selectData.Categorys}}</span>
+                  <span>(</span>
+                  <span class="book-list-info-bottom-right-font text-right" id="selectStatus">{{selectData.Status}}</span>
+                  <span>)</span>
+                </p>
+              </div>
+            </div> -->
+
+
+
+          </div>
+
+          <form id="comment" class="px-2">
+
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="userName">推薦者<span class="text-danger"><small>(必填)</small></span></label>
+                <input type="email" class="form-control" v-model="comment.userName" placeholder="請盡量保持名稱一致">
+              </div>
+
+              <div class="form-group col-md-6">
+                <label for="userName">推薦星數<span class="text-danger"><small>(必填)</small></span></label>
+                <p>
+                  <span onclick='clickStart(1)' id='start1' class='start_zyz'>☆</span>
+                  <span onclick='clickStart(2)' id='start2' class='start_zyz'>☆</span>
+                  <span onclick='clickStart(3)' id='start3' class='start_zyz'>☆</span>
+                  <span onclick='clickStart(4)' id='start4' class='start_zyz'>☆</span>
+                  <span onclick='clickStart(5)' id='start5' class='start_zyz'>☆</span>
+                  <span>(</span><span id="stars">0</span><span>)</span></p>
+                <!-- <input type="text" id="starsInput" v-model='comment.stars' value="0" style="display:none"> -->
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="userName">標籤<span class="text-danger"><small>(必填)</small></span></label>
+              <input type="text" id="tags">
+              <p>熱門標籤：
+                <button type="button" class="btn btn-info btn-sm mr-1 mt-1" v-for="tag in tags" @click="addTag(tag[0])">
+                  {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
+                </button>
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label for="userComment">推薦簡介</label>
+              <textarea class="form-control" v-model="comment.userComment" rows="3"></textarea>
+            </div>
+
+            <div class="form-group row">
+              <label for="deletePw" class="col-sm-2 col-form-label">文章密碼</label>
+              <div class="col-sm-10">
+                <input type="password" class="form-control" v-model='comment.pw' placeholder="修改或刪除評論時需要的一次性密碼">
+              </div>
+            </div>
+
+          </form>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            <button type="button" class="btn" :class="[ loading? 'btn-secondary': 'btn-primary' ]" id="sendComment" @click='sendComment'>{{sendCommentBtn}}</button>
+
+            <!-- <div>
+              <P>Name:{{comment.userName}}</P>
+              <P>stars:{{comment.stars}}</P>
+              <P>tags:{{comment.tags}}</P>
+              <P>userComment:{{comment.userComment}}</P>
+            </div> -->
+          </div>
+          <p class="text-danger">{{warning}}</p>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <h3>搜尋漫畫</h3>
+    <!-- <input type="text" id="tagX" placeholder="tag"> -->
+
+    <input type="text" id="searchAjax" v-model='comicName' @keyup.enter="getSearch()" placeholder="請輸入漫畫名稱/作者">
+    <!-- <input type="submit" value="傳送"> -->
+    <button class="bookbtn btn" :class="[ loading? 'btn-secondary': 'btn-primary' ]" @click="getSearch()" :disabled="loading">{{searchBtn}} </button>
+    <!-- <button class="btn" @click="openModel()" :disabled="loading">openModel</button> -->
+
+    <!-- </form> -->
+    <div class="container" id='comicSearch' v-show="searchStart">
+
+
+      <div class='row' id='searchList'>
+
+
+        <div class="col-6 col-sm-4 col-md-3 pb-3" v-for="(searchData,index) in searchDatas">
+          <div class="card text-center" style="//width: 18rem;">
+            <img class="card-img-top" :src="searchData.BigPic">
+            <div class="card-body">
+              <p class="card-text text-truncate">{{searchData.Title}}<br><span class="text-muted">{{searchData.Author.join()}}</span></p>
+
+            </div>
+            <div class="card-footer bg-success text-white start_zyz" @click='getDetail(index)'>
+              <!-- <p class="bookbtn btn btn-outline-success" >選擇</p> -->
+              選擇漫畫
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <button class="btn col-md-12 pt-2" :class="[ loading? 'btn-outline-secondary': 'btn-outline-success' ]" id="loadMore" @click="getMoreSearch()" :disabled="loading">{{searchMoreBtn}}</button>
+    </div>
+  </div>
+
+
+  <script type="text/javascript">
+    //jQuery
+    var googleAppUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
+  </script>
+
+
+  <script type="text/javascript">
+    // VUE
+    window.onload = function() {
+      var vmSearch = new Vue({
+        el: '#mainSearch',
+        data: {
+          comicName: '',
+          searchDatas: [],
+          loading: false,
+          searchStart: false,
+          loadPage: 1,
+          tagsOn: false,
+          warning: '',
+          selectData: {
+            "Id": 40420,
+            "Author": ["天树征丸"],
+            "Url": "/manhua-jintianyi-37-suishijianbu/",
+            "Pic": "http://mhfm4218us.cdndm5.com/41/40420/20181011103215_320x246_40.jpg",
+            "Title": "金田一37岁事件簿",
+            "LastUpdateInfo": "第31话:双胞胎姐妹",
+            "LastPartShowName": "第31话",
+            "Mid": 40420,
+            "ReadUrl": "",
+            "BigPic": "http://mhfm6218us.cdndm5.com/41/40420/20181011103128_180x240_24.jpg",
+            "Content": "从脏兮兮的房间开始的，全新的“金田一”系列！！！37岁的“阿一”他成长为了怎样的大人呢！？",
+            "TagList": ["悬疑"],
+            "LastPartUrl": "m819080",
+            "AuthorUrl": ["/search?title=%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8&language=1&f=2"],
+            "LastPartTime": "2019-05-10",
+            "AddTime": "2018-01-21",
+            "Categorys": "少年热血,侦探推理",
+            "Score": null,
+            "Status": "连载中"
+          },
+          comment: {
+            userName: '',
+            stars: 0,
+            tags: '',
+            userComment: ''
+          },
+          tags: []
+
+        },
+        computed: {
+          // 一個計算屬性的 getter
+          searchBtn: function() {
+            // `this` 指向 vm 實例
+            return (this.loading) ? '讀取中…' : '搜尋漫畫';
+          },
+          searchMoreBtn: function() {
+            // `this` 指向 vm 實例
+            return (this.loading) ? '讀取中…' : '讀取更多';
+          },
+          sendCommentBtn: function() {
+            // `this` 指向 vm 實例
+            return (this.loading) ? '處理中…' : '確認送出';
+          }
+        },
+        methods: {
+          getSearch: function() {
+            //if (this.loading = true) return;
+            this.loadPage = 1;
+            this.searchDatas = [];
+            this.getMoreSearch();
+          },
+          getMoreSearch: function() {
+            this.loading = true;
+            appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
+            var getBody = {
+              type: 'searchComic',
+              searchComic: this.comicName,
+              loadPage: this.loadPage
+            };
+            //發送get請求
+            this.$http.get(appUrl, {
+              params: getBody
+            }).
+            then(function(res) {
+              console.log(res);
+
+
+              var ajaxData = res.body;
+              this.searchDatas = this.searchDatas.concat(ajaxData);
+              //console.log(this.searchDatas);
+              this.loadPage++;
+              this.loading = false;
+              this.searchStart = true;
+
+            }, function() {
+              console.log('請求失敗處理');
+            });
+          },
+          getNum: function(num) {
+            alert('取得' + num);
+          },
+          addTag: function(tag) {
+            $('#tags').addTag(tag);
+          },
+          getTags: function() {
+            appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
+            var getBody = {
+              type: 'searchTags'
+            };
+            //發送get請求
+            this.$http.get(appUrl, {
+              params: getBody
+            }).
+            then(function(res) {
+              console.log(res);
+              var ajaxData = res.body;
+              this.tags = ajaxData;
+            }, function() {
+              console.log('請求失敗處理');
+            });
+          },
+          openModel: function() {
+            $('#comicDetailModal').modal('show');
+          },
+          getDetail: function(num) {
+            this.selectData = this.searchDatas[num];
+            if (this.tagsOn === false) {
+              $('#tags').tagsInput({
+                'width': 'auto',
+              });
+              this.tagsOn = true;
+            }
+            this.getTags();
+            $('#comicDetailModal').modal('show');
+          },
+          sendComment: function() {
+            this.comment.stars = $('#stars').html();
+            this.comment.tags = $('#tags').val();
+            if (this.comment.stars == 0) {
+              this.warning = '請選擇推薦星數。';
+            } else if (this.comment.tags.length == 0) {
+              this.warning = '請至少選擇一個標籤。';
+            } else if (this.comment.userName.length == 0) {
+              this.warning = '請輸入推薦人。';
+            } else {
+              this.loading = true;
+              appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
+              var postBody = {
+                type: 'addComic',
+                userName: this.comment.userName,
+                stars: this.comment.stars,
+                tags: this.comment.tags,
+                pw: this.comment.pw,
+                userComment: this.comment.userComment,
+                title: this.selectData.Title,
+                author: this.selectData.Author.join(),
+                url: this.selectData.Url,
+                id: this.selectData.Id
+              };
+              //發送get請求
+              this.$http.post(appUrl, postBody, {
+                emulateJSON: true
+              }).
+              then(function(res) {
+                console.log(res);
+                this.loading = false;
+                this.comment.stars = 0;
+                this.comment.tags = '';
+                this.comment.userComment = '';
+                this.warning = '';
+                $('#comicDetailModal').modal('hide');
+              }, function() {
+                console.log('請求失敗處理');
+              });
+            }
+
+
+          }
+        }
+      });
+    }
+  </script>
+
+
+  <script type="text/javascript">
+    //basic JS
+    $(document).ready(function() {
+      // $('#tagX').tagsInput({
+      //   'width': 'auto',
+      //   'autocomplete_url': 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec',
+      //   //'autocomplete_url': 'fake.json',
+      // });
+    });
+
+
+
+    function clickStart(index) {
+      //★
+      clearStart();
+      // hide = index
+
+      for (var i = 1; i <= index; i++) {
+        var span = document.getElementById('start' + i);
+        //alert('span-->'+span)
+        span.innerHTML = '★';
+      }
+
+      var stars = document.getElementById('stars');
+      stars.innerHTML = index;
+      // var starsInput = document.getElementById('starsInput');
+      // starsInput.value = index;
+    }
+
+
+
+    function clearStart() {
+      //★
+      // hide = index
+      for (var i = 1; i <= 5; i++) {
+        var span = document.getElementById('start' + i);
+        span.innerHTML = '☆';
+      }
+
+    }
+    //-->
+  </script>
+
+
+
+
+</body>
+
+</html>
