@@ -4,7 +4,7 @@
   <title>湯群漫畫推薦網
   </title>
   <link rel="stylesheet" type="text/css" href="jquery.tagsinput.css" />
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Noto+Sans+TC|Noto+Serif+TC" rel="stylesheet">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 
@@ -31,7 +31,7 @@
 
     }
 
-    .start_zyz{
+    .cursor_pointer{
         cursor:pointer;
     }
 
@@ -40,181 +40,496 @@
 </head>
 
 <body>
-  <div id="mainSearch">
-    <!-- Modal -->
+  <!-- 導覽列 -->
+  <div id="mainBody">
+    <navbar-item
+    :now-at-comic='nowAtComic'
+    :loading='loading'
+    :dev='dev'
+    @now-at-comic-false='nowAtComic = false'
+    @now-at-comic-true='nowAtComic = true'
+    @dev = 'dev = !dev'
+    @get-search='search'
+    v-model="searchText"></navbar-item>
+
+    <!-- 搜尋Modal -->
     <div class="modal fade" id="comicDetailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">選擇的漫畫</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body" id='comicDetail'>
+      <modal-item>
+        <div class="modal-body" id='comicDetail'>
 
-            <div class="media">
-              <img class="col-4" :src="selectData.BigPic" alt="Generic placeholder image">
-              <div class="media-body">
-                <h5 class="mt-0">{{selectData.Title}}</h5>
-                <p>{{selectData.Author.join()}}</p>
-                <p><span class="book-list-info-bottom-item" id="selectCategorys">{{selectData.Categorys}}</span>
-                  <span>(</span>
-                  <span class="book-list-info-bottom-right-font text-right" id="selectStatus">{{selectData.Status}}</span>
-                  <span>)</span>
-                </p>
-              </div>
-            </div>
-
-            <p class="book-list-info-desc" id="selectContent">{{selectData.Content}}</p>
-
-            <!-- <div class="media">
-              <div class="book-list-cover"><img class="book-list-cover-img hoverZoomLink" :src="selectData.BigPic" :alt="selectData.Title" id="selectCover"></div>
-              <div class="book-list-info media-body">
-                <h4 class="book-list-info-title" id="selectTitle">{{selectData.Title}}</h4>
-                <h6 id="selectAuthor">{{selectData.Author.join()}}</h6>
-                <p class="book-list-info-desc" id="selectContent">{{selectData.Content}}</p>
-                <p><span class="book-list-info-bottom-item" id="selectCategorys">{{selectData.Categorys}}</span>
-                  <span>(</span>
-                  <span class="book-list-info-bottom-right-font text-right" id="selectStatus">{{selectData.Status}}</span>
-                  <span>)</span>
-                </p>
-              </div>
-            </div> -->
-
-
-
-          </div>
-
-          <form id="comment" class="px-2">
-
-            <div class="form-row">
-              <div class="form-group col-md-6">
-                <label for="userName">推薦者<span class="text-danger"><small>(必填)</small></span></label>
-                <input type="email" class="form-control" v-model="comment.userName" placeholder="請盡量保持名稱一致">
-              </div>
-
-              <div class="form-group col-md-6">
-                <label for="userName">推薦星數<span class="text-danger"><small>(必填)</small></span></label>
-                <p>
-                  <span onclick='clickStart(1)' id='start1' class='start_zyz'>☆</span>
-                  <span onclick='clickStart(2)' id='start2' class='start_zyz'>☆</span>
-                  <span onclick='clickStart(3)' id='start3' class='start_zyz'>☆</span>
-                  <span onclick='clickStart(4)' id='start4' class='start_zyz'>☆</span>
-                  <span onclick='clickStart(5)' id='start5' class='start_zyz'>☆</span>
-                  <span>(</span><span id="stars">0</span><span>)</span></p>
-                <!-- <input type="text" id="starsInput" v-model='comment.stars' value="0" style="display:none"> -->
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="userName">標籤<span class="text-danger"><small>(必填)</small></span></label>
-              <input type="text" id="tags">
-              <p>熱門標籤：
-                <button type="button" class="btn btn-info btn-sm mr-1 mt-1" v-for="tag in tags" @click="addTag(tag[0])">
-                  {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
-                </button>
+          <div class="media">
+            <img class="col-4" :src="selectSearchData.BigPic" alt="Generic placeholder image">
+            <div class="media-body">
+              <h5 class="mt-0">{{selectSearchData.Title}}</h5>
+              <p>{{selectSearchData.Author.join()}}</p>
+              <p><span class="book-list-info-bottom-item" id="selectCategorys">{{selectSearchData.Categorys}}</span>
+                <span>(</span>
+                <span class="book-list-info-bottom-right-font text-right" id="selectStatus">{{selectSearchData.Status}}</span>
+                <span>)</span>
               </p>
             </div>
+          </div>
 
-            <div class="form-group">
-              <label for="userComment">推薦簡介</label>
-              <textarea class="form-control" v-model="comment.userComment" rows="3"></textarea>
+          <p class="book-list-info-desc" id="selectContent">{{selectSearchData.Content}}</p>
+        </div>
+
+        <form id="comment" class="px-2">
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="userName">推薦者<span class="text-danger"><small>(必填)</small></span></label>
+              <input type="email" class="form-control" v-model="comment.userName" placeholder="請盡量保持名稱一致">
             </div>
 
-            <div class="form-group row">
-              <label for="deletePw" class="col-sm-2 col-form-label">文章密碼</label>
-              <div class="col-sm-10">
-                <input type="password" class="form-control" v-model='comment.pw' placeholder="修改或刪除評論時需要的一次性密碼">
+            <div class="form-group col-md-6">
+              <label for="userName">推薦星數<span class="text-danger"><small>(必填)</small></span></label>
+              <p>
+                <span @click='comment.stars = 1' id='start1' class='cursor_pointer' :class="parseInt(comment.stars)>=1 ?'text-warning':''">{{parseInt(comment.stars)>=1 ?'★' :'☆'}}</span>
+                <span @click='comment.stars = 2' id='start2' class='cursor_pointer' :class="parseInt(comment.stars)>=2 ?'text-warning':''">{{parseInt(comment.stars)>=2 ?'★' :'☆'}}</span>
+                <span @click='comment.stars = 3' id='start3' class='cursor_pointer' :class="parseInt(comment.stars)>=3 ?'text-warning':''">{{parseInt(comment.stars)>=3 ?'★' :'☆'}}</span>
+                <span>{{(comment.stars == 1)?'（不錯看。）':''}}{{(comment.stars == 2)?'（超好看！）':''}}{{(comment.stars == 3)?'（人生必看！！）':''}}</span></p>
+              <!-- <input type="text" id="starsInput" v-model='comment.stars' value="0" style="display:none"  {{true?★:☆}}> -->
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="userName">標籤<span class="text-danger"><small>(必填)</small></span></label>
+            <input type="text" id="tags">
+            <p>熱門標籤：
+              <button type="button" class="btn btn-info btn-sm mr-1 mt-1" v-for="tag in tagsShow" @click="addTag(tag[0])">
+                {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
+              </button>
+              <small class="text-muted cursor_pointer" v-show="!tagsShowMoreOrNot" @click='tagsShowMoreOrNot = true'>展開全部…</small>
+
+              <button type="button" class="btn btn-info btn-sm mr-1 mt-1" v-show="tagsShowMoreOrNot" v-for="tag in tagsHide" @click="addTag(tag[0])">
+                {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
+              </button>
+
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label for="userComment">推薦簡介</label>
+            <textarea class="form-control" v-model="comment.userComment" rows="3"></textarea>
+          </div>
+
+          <div class="form-group row">
+            <label for="deletePw" class="col-sm-2 col-form-label">文章密碼</label>
+            <div class="col-sm-10">
+              <input type="password" class="form-control" v-model='comment.pw' placeholder="修改或刪除評論時需要的一次性密碼">
+            </div>
+          </div>
+
+        </form>
+
+        <div class="modal-footer">
+          <span class="text-danger">{{comment.warning}}</span>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+          <button type="button" class="btn" :class="[ loading? 'btn-secondary': 'btn-primary' ]" id="sendComment" @click="sendComment('addComic')">確定送出</button>
+        </div>
+
+      </modal-item>
+    </div>
+
+
+
+    <!-- 主要顯示頁面在此 -->
+    <div class="container" v-show="nowAtComic">
+      <div class='row'>
+        <comic-card-item v-for="comic in comicsListDev" :comic="comic">
+        </comic-card-item>
+      </div>
+    </div>
+
+    <div class="container" v-show="!nowAtComic">
+      <p v-show="searchComicsList.length === 0 && !loading"> (請於搜尋框內輸入欲新增的漫畫關鍵字) </p>
+      <div class='row'>
+        <searchcomic-card-item @search-select='openSearchDetail($event)' v-for="(comic,index) in searchComicsListDev" :comic="comic" :index="index">
+        </searchcomic-card-item>
+      </div>
+      <button class="btn col-md-12 pt-2" v-show="searchComicsList.length != 0" @click="search()">載入更多</button>
+    </div>
+
+  </div>
+</body>
+
+
+
+
+<script type="text/javascript">
+  window.onload = function() {
+    Vue.component('navbar-item', {
+
+      props: [
+        'nowAtComic',
+        'value',
+        'loading',
+        'dev'
+      ],
+      computed: {
+        tangLoading: function() {
+
+        }
+      },
+      methods: {
+        openModel: function() {
+          $('#comicDetailModal').modal('show');
+        }
+      },
+
+
+
+      template: `
+      <nav class="navbar navbar-expand-md navbar-light bg-light sticky-top" id='navBar'>
+        <a v-show="!loading" class="navbar-brand">湯</a>
+        <a v-show="loading" class="spinner-border"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item cursor_pointer" :class="[ nowAtComic? 'active': '' ]">
+              <a class="nav-link cursor_pointer" @click="$emit('now-at-comic-true')">漫畫一覽 <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item cursor_pointer" :class="[ !nowAtComic? 'active': '' ]">
+              <a class="nav-link cursor_pointer" @click="$emit('now-at-comic-false')">新增漫畫</a>
+            </li>
+            <li class="nav-item cursor_pointer" >
+              <a class="nav-link cursor_pointer" @click="$emit('dev')">dev:{{dev}}</a>
+            </li>
+            <li class="nav-item cursor_pointer" >
+              <a class="nav-link cursor_pointer" @click="openModel()">open modal</a>
+            </li>
+          </ul>
+
+          <form class="form-inline my-2 my-lg-0" @submit.prevent>
+            <div class="input-group">
+              <input type="search" class="form-control" v-bind:value="value" v-on:input="$emit('input', $event.target.value)" @keyup.enter="$emit('get-search')" placeholder="請輸入漫畫名稱/作者">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" :disabled="(loading || value.length === 0)" @click="$emit('get-search')">search</button>
               </div>
             </div>
-
           </form>
 
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-            <button type="button" class="btn" :class="[ loading? 'btn-secondary': 'btn-primary' ]" id="sendComment" @click='sendComment'>{{sendCommentBtn}}</button>
-
-            <!-- <div>
-              <P>Name:{{comment.userName}}</P>
-              <P>stars:{{comment.stars}}</P>
-              <P>tags:{{comment.tags}}</P>
-              <P>userComment:{{comment.userComment}}</P>
-            </div> -->
-          </div>
-          <p class="text-danger">{{warning}}</p>
         </div>
-      </div>
-    </div>
+      </nav>
+      `
+    });
 
 
 
-
-    <h3>搜尋漫畫</h3>
-    <!-- <input type="text" id="tagX" placeholder="tag"> -->
-
-    <input type="text" id="searchAjax" v-model='comicName' @keyup.enter="getSearch()" placeholder="請輸入漫畫名稱/作者">
-    <!-- <input type="submit" value="傳送"> -->
-    <button class="bookbtn btn" :class="[ loading? 'btn-secondary': 'btn-primary' ]" @click="getSearch()" :disabled="loading">{{searchBtn}} </button>
-    <!-- <button class="btn" @click="openModel()" :disabled="loading">openModel</button> -->
-
-    <!-- </form> -->
-    <div class="container" id='comicSearch' v-show="searchStart">
-
-
-      <div class='row' id='searchList'>
-
-
-        <div class="col-6 col-sm-4 col-md-3 pb-3" v-for="(searchData,index) in searchDatas">
-          <div class="card text-center" style="//width: 18rem;">
-            <img class="card-img-top" :src="searchData.BigPic">
-            <div class="card-body">
-              <p class="card-text text-truncate">{{searchData.Title}}<br><span class="text-muted">{{searchData.Author.join()}}</span></p>
-
-            </div>
-            <div class="card-footer bg-success text-white start_zyz" @click='getDetail(index)'>
-              <!-- <p class="bookbtn btn btn-outline-success" >選擇</p> -->
-              選擇漫畫
+    Vue.component('comic-card-item', {
+      props: ['comic'],
+      template: `
+      <div class="col-md-6 col-lg-4 pb-3" >
+        <div class="card" style="//width: 18rem;">
+          <div class="card-body">
+            <div class="media">
+              <img class="col-5" :src="comic[6]" alt="Generic placeholder image">
+              <div class="media-body col-7">
+                <h6 class="card-title">{{comic[1]}}</h6>
+                <p class="card-subtitle mb-2 text-muted">推薦人：{{comic[3]}}</p>
+                <span class='text-warning' v-for="n in parseInt(comic[5])">★</span><span v-for="n in parseInt(3-comic[5])">☆</span>
+              </div>
             </div>
           </div>
-
         </div>
       </div>
-      <button class="btn col-md-12 pt-2" :class="[ loading? 'btn-outline-secondary': 'btn-outline-success' ]" id="loadMore" @click="getMoreSearch()" :disabled="loading">{{searchMoreBtn}}</button>
-    </div>
-  </div>
+      `
+    });
 
+    Vue.component('modal-item', {
+      data: function() {
+        return {}
+      },
+      props: ['modal-id'],
+      template: `
 
-  <script type="text/javascript">
-    //jQuery
-    var googleAppUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
-  </script>
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">選擇的漫畫</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
 
+            <slot></slot>
 
-  <script type="text/javascript">
-    // VUE
-    window.onload = function() {
-      var vmSearch = new Vue({
-        el: '#mainSearch',
-        data: {
-          comicName: '',
-          searchDatas: [],
-          loading: false,
-          searchStart: false,
+          </div>
+        </div>
+
+      `
+    });
+
+    Vue.component('searchcomic-card-item', {
+      props: ['comic', 'index'],
+      template: `
+      <div class="col-6 col-sm-4 col-md-3 pb-3">
+        <div class="card text-center" style="//width: 18rem;">
+          <img class="card-img-top" :src="comic.BigPic">
+          <div class="card-body">
+            <p class="card-text text-truncate">{{comic.Title}}<br><span class="text-muted">{{comic.Author.join()}}</span></p>
+
+          </div>
+          <div class="card-footer bg-success text-white cursor_pointer"
+          @click="$emit('search-select', index)"
+          >
+            <!-- <p class="bookbtn btn btn-outline-success" >選擇</p> -->
+            選擇漫畫
+          </div>
+        </div>
+      </div>
+      `
+    });
+
+    var vm = new Vue({
+      el: '#mainBody',
+      data: {
+        nowAtComic: true,
+        searchText: '',
+        loading: false,
+        dev: false,
+
+        comicsList: [],
+        searchComicsList: [],
+        ajaxData: [],
+
+        searchComicData: {
           loadPage: 1,
-          tagsOn: false,
+          comicName: '',
+          select: 0
+        },
+
+        comment: {
+          userName: '',
+          stars: 0,
+          tags: '',
+          userComment: '',
+          pw: '',
           warning: '',
-          selectData: {
+          tagsOn: false,
+          tagsShowMoreOrNot: false
+        },
+        tags: [],
+        showOrNot: false,
+        tagsShowMoreOrNot: false
+      },
+      created() {
+        this.search();
+
+      },
+      methods: {
+        openSearchDetail: function(num) {
+          this.searchComicData.select = num;
+          if (this.comment.tagsOn === false) {
+            $('#tags').tagsInput({
+              'width': 'auto',
+            });
+            this.comment.tagsOn = true;
+          }
+          this.getTags();
+          this.comment.warning = '';
+          this.comment.tagsShowMoreOrNot = false;
+          $('#comicDetailModal').modal('show');
+        },
+
+        // TAG相關
+        addTag: function(tag) {
+          $('#tags').addTag(tag);
+        },
+        getTags: function() {
+          appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
+          var getBody = {
+            type: 'searchTags'
+          };
+          //發送get請求
+          this.$http.get(appUrl, {
+            params: getBody
+          }).
+          then(function(res) {
+            console.log(res);
+            var ajaxData = res.body;
+            this.tags = ajaxData;
+            console.log(this.tags);
+          }, function() {
+            console.log('請求失敗處理');
+          });
+        },
+
+
+
+
+        search: function() {
+          this.loading = true;
+          appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
+
+          if (this.nowAtComic) {
+            var getBody = {
+              type: 'comicList'
+            };
+          } else {
+            if (this.searchComicData.comicName !== this.searchText) {
+              this.searchComicData.comicName = this.searchText;
+              this.searchComicData.loadPage = 1;
+              this.searchComicsList = [];
+            }
+            var getBody = {
+              type: 'searchComic',
+              searchComic: this.searchComicData.comicName,
+              loadPage: this.searchComicData.loadPage
+            };
+          }
+
+          //發送get請求
+          this.$http.get(appUrl, {
+            params: getBody
+          }).
+          then(function(res) {
+            console.log(res);
+            this.ajaxData = res.body;
+            if (this.nowAtComic) {
+              this.comicsList = this.ajaxData;
+            } else {
+              this.searchComicsList = this.searchComicsList.concat(this.ajaxData);
+              this.searchComicData.loadPage++;
+            }
+            this.ajaxData = [];
+            this.loading = false;
+
+          }, function() {
+            console.log('請求失敗處理');
+          });
+        },
+
+        sendComment: function(type) {
+          this.comment.stars = $('#stars').html();
+          this.comment.tags = $('#tags').val();
+          if (this.comment.stars == 0) {
+            this.comment.warning = '請選擇推薦星數。';
+          } else if (this.comment.tags.length == 0) {
+            this.comment.warning = '請至少選擇一個標籤。';
+          } else if (this.comment.userName.length == 0) {
+            this.comment.warning = '請輸入推薦人。';
+          } else {
+            this.loading = true;
+            appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
+            var postBody = {
+              type: type,
+              userName: this.comment.userName,
+              stars: this.comment.stars,
+              tags: this.comment.tags,
+              pw: this.comment.pw,
+              userComment: this.comment.userComment,
+              title: this.selectSearchData.Title,
+              author: this.selectSearchData.Author.join(),
+              url: this.selectSearchData.Url,
+              bigPic: this.selectSearchData.BigPic,
+              id: this.selectSearchData.Id
+            };
+            //發送post請求
+            this.$http.post(appUrl, postBody, {
+              emulateJSON: true
+            }).
+            then(function(res) {
+              console.log(res);
+              this.loading = false;
+
+              var ajaxData = res.body;
+              if (ajaxData.state === 'success') {
+                this.comment.stars = 0;
+                this.comment.tags = '';
+                this.comment.userComment = '';
+                this.comment.tagsShowMoreOrNot = false;
+
+                $('#tags').importTags('');
+                this.comment.warning = '';
+                $('#comicDetailModal').modal('hide');
+              } else if (ajaxData.state === 'duplicated') {
+                this.comment.warning = '書單裡面已有這本漫畫囉，去留言吧！';
+              } else {
+                this.comment.warning = '有不明錯誤，去問阿歐西吧。';
+              }
+            }, function() {
+              console.log('請求失敗處理');
+            });
+          }
+
+
+        }
+      },
+      computed: {
+
+        tagsShow: function() {
+          var tempArr = this.tags.slice(0);
+          tempArr.splice(5);
+          return tempArr;
+        },
+        tagsHide: function() {
+          var tempArr = this.tags.slice(0);
+          return tempArr.splice(5);
+        },
+
+
+
+
+        selectSearchData: function() {
+          if (this.searchComicsList.length != 0) {
+            return this.searchComicsList[this.searchComicData.select];
+          }
+          return {
             "Id": 40420,
-            "Author": ["天树征丸"],
+            "Author": ["天"],
+            "Url": "/manhua/",
+            "Pic": "http://mhfm4218us.cdndm5.com/41/40420/20181011103215_320x246_40.jpg",
+            "Title": "金田一",
+            "LastUpdateInfo": "第31话",
+            "LastPartShowName": "第31话",
+            "Mid": 40420,
+            "ReadUrl": "",
+            "BigPic": "http://mhfm6218us.cdndm5.com/41/40420/20181011103128_180x240_24.jpg",
+            "Content": "全新的“金田一”",
+            "TagList": ["悬疑"],
+            "LastPartUrl": "m819080",
+            "AuthorUrl": ["/"],
+            "LastPartTime": "2019-05-10",
+            "AddTime": "2018-01-21",
+            "Categorys": "少年热血,侦探推理",
+            "Score": null,
+            "Status": "连载中"
+          };
+
+        },
+
+        comicsListDev: function() {
+          return (this.dev) ? [
+            ["34944", "兩隻兔子", "山うた", "歐西女友", "愛情,胃痛,不死身", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
+            ["18258", "虛構推理", "城平京,片瀨茶柴", "歐西女友", "愛情,推理,不死身,妖怪,合法蘿莉", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
+            ["18417", "輝夜大小姐想讓我告白 ~天才們的戀愛頭腦戰~", "赤坂アカ", "歐西女友", "愛情,喜劇,真香", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
+            ["15043", "哈庫梅伊與蜜珂析", "樫木祐人", "歐西女友", "奇幻,動物,職業", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
+            ["16769", "少女終末旅行", "つくみず", "歐西女友", "胃痛,治癒,哲學", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
+            ["12072", "帝一之國", "古屋兔丸", "歐西女友", "好基友,喜劇,校園", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
+            ["15616", "迷宮飯", "九井諒子", "歐西女友", "奇幻,食譜,真香,顏藝,街舞精靈", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
+            ["13915", "ARTE", "大久保圭", "歐西女友", "職業", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
+            ["7947", "JOJO奇妙冒險第8部", "荒木飛呂彥", "sss", "胃痛,喜劇,愛情,不死身", "2", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
+            ["595", "金田一短篇集", "天樹徵丸,佐藤文", "sss", "胃痛", "1", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
+            ["4684", "第一神拳", "森川讓次", "5555", "胃痛", "2", "http://mhfm8218us.cdndm5.com/5/4684/4684_b.jpg"]
+          ] : this.comicsList;
+        },
+        searchComicsListDev: function() {
+          return (this.dev) ? [{
+            "Id": 40420,
+            "Author": ["天樹徵丸"],
             "Url": "/manhua-jintianyi-37-suishijianbu/",
             "Pic": "http://mhfm4218us.cdndm5.com/41/40420/20181011103215_320x246_40.jpg",
-            "Title": "金田一37岁事件簿",
+            "Title": "金田一37歲事件簿",
             "LastUpdateInfo": "第31话:双胞胎姐妹",
             "LastPartShowName": "第31话",
             "Mid": 40420,
             "ReadUrl": "",
             "BigPic": "http://mhfm6218us.cdndm5.com/41/40420/20181011103128_180x240_24.jpg",
-            "Content": "从脏兮兮的房间开始的，全新的“金田一”系列！！！37岁的“阿一”他成长为了怎样的大人呢！？",
+            "Content": "從臟兮兮的房間開始的，全新的“金田一”系列！ ！ ！ 37歲的“阿一”他成長為了怎樣的大人呢！ ？",
             "TagList": ["悬疑"],
             "LastPartUrl": "m819080",
             "AuthorUrl": ["/search?title=%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8&language=1&f=2"],
@@ -223,197 +538,191 @@
             "Categorys": "少年热血,侦探推理",
             "Score": null,
             "Status": "连载中"
-          },
-          comment: {
-            userName: '',
-            stars: 0,
-            tags: '',
-            userComment: ''
-          },
-          tags: []
-
-        },
-        computed: {
-          // 一個計算屬性的 getter
-          searchBtn: function() {
-            // `this` 指向 vm 實例
-            return (this.loading) ? '讀取中…' : '搜尋漫畫';
-          },
-          searchMoreBtn: function() {
-            // `this` 指向 vm 實例
-            return (this.loading) ? '讀取中…' : '讀取更多';
-          },
-          sendCommentBtn: function() {
-            // `this` 指向 vm 實例
-            return (this.loading) ? '處理中…' : '確認送出';
-          }
-        },
-        methods: {
-          getSearch: function() {
-            //if (this.loading = true) return;
-            this.loadPage = 1;
-            this.searchDatas = [];
-            this.getMoreSearch();
-          },
-          getMoreSearch: function() {
-            this.loading = true;
-            appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
-            var getBody = {
-              type: 'searchComic',
-              searchComic: this.comicName,
-              loadPage: this.loadPage
-            };
-            //發送get請求
-            this.$http.get(appUrl, {
-              params: getBody
-            }).
-            then(function(res) {
-              console.log(res);
-
-
-              var ajaxData = res.body;
-              this.searchDatas = this.searchDatas.concat(ajaxData);
-              //console.log(this.searchDatas);
-              this.loadPage++;
-              this.loading = false;
-              this.searchStart = true;
-
-            }, function() {
-              console.log('請求失敗處理');
-            });
-          },
-          getNum: function(num) {
-            alert('取得' + num);
-          },
-          addTag: function(tag) {
-            $('#tags').addTag(tag);
-          },
-          getTags: function() {
-            appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
-            var getBody = {
-              type: 'searchTags'
-            };
-            //發送get請求
-            this.$http.get(appUrl, {
-              params: getBody
-            }).
-            then(function(res) {
-              console.log(res);
-              var ajaxData = res.body;
-              this.tags = ajaxData;
-            }, function() {
-              console.log('請求失敗處理');
-            });
-          },
-          openModel: function() {
-            $('#comicDetailModal').modal('show');
-          },
-          getDetail: function(num) {
-            this.selectData = this.searchDatas[num];
-            if (this.tagsOn === false) {
-              $('#tags').tagsInput({
-                'width': 'auto',
-              });
-              this.tagsOn = true;
-            }
-            this.getTags();
-            $('#comicDetailModal').modal('show');
-          },
-          sendComment: function() {
-            this.comment.stars = $('#stars').html();
-            this.comment.tags = $('#tags').val();
-            if (this.comment.stars == 0) {
-              this.warning = '請選擇推薦星數。';
-            } else if (this.comment.tags.length == 0) {
-              this.warning = '請至少選擇一個標籤。';
-            } else if (this.comment.userName.length == 0) {
-              this.warning = '請輸入推薦人。';
-            } else {
-              this.loading = true;
-              appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
-              var postBody = {
-                type: 'addComic',
-                userName: this.comment.userName,
-                stars: this.comment.stars,
-                tags: this.comment.tags,
-                pw: this.comment.pw,
-                userComment: this.comment.userComment,
-                title: this.selectData.Title,
-                author: this.selectData.Author.join(),
-                url: this.selectData.Url,
-                id: this.selectData.Id
-              };
-              //發送get請求
-              this.$http.post(appUrl, postBody, {
-                emulateJSON: true
-              }).
-              then(function(res) {
-                console.log(res);
-                this.loading = false;
-                this.comment.stars = 0;
-                this.comment.tags = '';
-                this.comment.userComment = '';
-                this.warning = '';
-                $('#comicDetailModal').modal('hide');
-              }, function() {
-                console.log('請求失敗處理');
-              });
-            }
-
-
-          }
+          }, {
+            "Id": 4743,
+            "Author": ["天樹徵丸"],
+            "Url": "/manhua-jintianyishaonianshijianbu-2008/",
+            "Pic": "http://mhfm4218us.cdndm5.com/5/4743/20151119141239_320x246_34.jpg",
+            "Title": "金田一少年事件簿2008",
+            "LastUpdateInfo": "第192话:白蛇酒窖杀人事件11",
+            "LastPartShowName": "第192话",
+            "Mid": 4743,
+            "ReadUrl": "",
+            "BigPic": "http://mhfm1218us.cdndm5.com/5/4743/4743_b.jpg",
+            "Content": "名偵探金田一一再次來到我們面前，怎麼樣的故事 什麼樣子的謎團等著我們。",
+            "TagList": ["悬疑", "热血"],
+            "LastPartUrl": "m406440",
+            "AuthorUrl": ["/search?title=%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8&language=1&f=2"],
+            "LastPartTime": "2016-09-10",
+            "AddTime": "2010-09-03",
+            "Categorys": "少年热血,侦探推理",
+            "Score": null,
+            "Status": "连载中"
+          }, {
+            "Id": 552,
+            "Author": ["天樹徵丸", "佐藤文"],
+            "Url": "/manhua-jintianshaonianshijianbao/",
+            "Pic": "http://mhfm5218us.cdndm5.com/1/552/20160309115709_320x246_35.jpg",
+            "Title": "金田一少年事件薄",
+            "LastUpdateInfo": "解谜书—挑战高难度事件吧！",
+            "LastPartShowName": "解谜书—挑战高难度事件吧！",
+            "Mid": 552,
+            "ReadUrl": "",
+            "BigPic": "http://mhfm4218us.cdndm5.com/1/552/20150414152939_180x240_19.jpg",
+            "Content": "金田一少年之事件簿漫畫，主角是名偵探金田一耕助的孫子金田一一和青梅竹馬“好友”七瀨美雪、警察“朋友”劍持勇警部、“對手”明智健悟警視等夥伴，運用高超的推理能力，解決遭遇到的各種困難案件。 IQ180的天才少年金田一，面...",
+            "TagList": ["悬疑"],
+            "LastPartUrl": "m505751",
+            "AuthorUrl": ["/search?title=%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8&language=1&f=2", "/search?title=%e4%bd%90%e8%97%a4%e6%96%87&language=1&f=2"],
+            "LastPartTime": "2017-07-26",
+            "AddTime": "2006-08-19",
+            "Categorys": "侦探推理",
+            "Score": null,
+            "Status": "连载中"
+          }, {
+            "Id": 15416,
+            "Author": ["金田一蓮十郎"],
+            "Url": "/manhua-haichayiqiudenanren/",
+            "Pic": "http://mhfm4218us.cdndm5.com/16/15416/15416_b.jpg",
+            "Title": "還差一球的男人",
+            "LastUpdateInfo": "第1话",
+            "LastPartShowName": "第1话",
+            "Mid": 15416,
+            "ReadUrl": "",
+            "BigPic": "http://mhfm4218us.cdndm5.com/16/15416/15416_b.jpg",
+            "Content": "還差一球的男人 金田一蓮十郎最新短篇！主人公是還差一次就能完成2000安打的職業棒球選手夏燒。由於比賽時發生的衝突事故和久病的影響而被勸引退的他為了光榮引退，以2000安打為目標而奮鬥。",
+            "TagList": [],
+            "LastPartUrl": "m162506",
+            "AuthorUrl": ["/search?title=%e9%87%91%e7%94%b0%e4%b8%80%e8%8e%b2%e5%8d%81%e9%83%8e&language=1&f=2"],
+            "LastPartTime": "2014-05-20",
+            "AddTime": "2014-05-20",
+            "Categorys": "运动竞技",
+            "Score": null,
+            "Status": "已完结"
+          }, {
+            "Id": 1456,
+            "Author": ["金田一蓮十郎"],
+            "Url": "/manhua-redaiyulindebaoxiaoshenghuo-diyibu/",
+            "Pic": "http://mhfm6218us.cdndm5.com/2/1456/1456_b.jpg",
+            "Title": "熱帶雨林的爆笑生活[第一部]",
+            "LastUpdateInfo": "第10卷",
+            "LastPartShowName": "第10卷",
+            "Mid": 1456,
+            "ReadUrl": "",
+            "BigPic": "http://mhfm6218us.cdndm5.com/2/1456/1456_b.jpg",
+            "Content": "熱帶雨林的爆笑生活(6張)小晴，一個平凡的男孩，和有點不負責的媽媽——維達生活在熱帶的雨林中，每天都是在摘香蕉，打遊戲，在學校和瞌睡老師與一群傻傻的同學打交道中度過。一天，維達打發小晴去摘香蕉，他卻遇見了一奇怪而巨大...",
+            "TagList": [],
+            "LastPartUrl": "m17085",
+            "AuthorUrl": ["/search?title=%e9%87%91%e7%94%b0%e4%b8%80%e8%8e%b2%e5%8d%81%e9%83%8e&language=1&f=2"],
+            "LastPartTime": "2006-08-31",
+            "AddTime": "2006-08-31",
+            "Categorys": "幽默爆笑",
+            "Score": null,
+            "Status": "已完结"
+          }, {
+            "Id": 595,
+            "Author": ["天樹徵丸", "佐藤文"],
+            "Url": "/manhua-jintianyiduanpianji/",
+            "Pic": "http://mhfm1218us.cdndm5.com/1/595/20161110151919_320x246_44.jpg",
+            "Title": "金田一短篇集",
+            "LastUpdateInfo": "第6卷",
+            "LastPartShowName": "第6卷",
+            "Mid": 595,
+            "ReadUrl": "",
+            "BigPic": "http://mhfm8218us.cdndm5.com/1/595/595_b.jpg",
+            "Content": "金田一短篇集漫畫，故事承接正篇，共6冊，分別以金田一的挑戰、推理、冒險、疾走、對決、回想等以個案形式推出，謎團真相一口氣解開！歡迎在線觀看！",
+            "TagList": ["悬疑"],
+            "LastPartUrl": "m6907",
+            "AuthorUrl": ["/search?title=%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8&language=1&f=2", "/search?title=%e4%bd%90%e8%97%a4%e6%96%87&language=1&f=2"],
+            "LastPartTime": "2006-08-19",
+            "AddTime": "2006-08-19",
+            "Categorys": "侦探推理",
+            "Score": null,
+            "Status": "已完结"
+          }, {
+            "Id": 549,
+            "Author": ["天樹徵丸", "佐藤文"],
+            "Url": "/manhua-jintianyixinban/",
+            "Pic": "http://mhfm8218us.cdndm5.com/1/549/20160317134611_320x246_31.jpg",
+            "Title": "金田一新版",
+            "LastUpdateInfo": "第10卷",
+            "LastPartShowName": "第10卷",
+            "Mid": 549,
+            "ReadUrl": "",
+            "BigPic": "http://mhfm1218us.cdndm5.com/1/549/549.jpg",
+            "Content": "現今懸疑推理小說大受歡迎，小說界和漫畫界當中，捲起了一股“偵探風”，而助長這股熱潮的最大動力就是這位智商180的天才——金田一一！這位名偵探金田一耕助的孫子，繼承了家族的遺傳，擁有超凡的推理能力及洞察力，把無數辣手的...",
+            "TagList": ["悬疑"],
+            "LastPartUrl": "m6285",
+            "AuthorUrl": ["/search?title=%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8&language=1&f=2", "/search?title=%e4%bd%90%e8%97%a4%e6%96%87&language=1&f=2"],
+            "LastPartTime": "2006-08-19",
+            "AddTime": "2007-08-05",
+            "Categorys": "侦探推理",
+            "Score": null,
+            "Status": "已完结"
+          }, {
+            "Id": 6213,
+            "Author": ["天樹徵丸"],
+            "Url": "/manhua-jianchijingbusharenshijian/",
+            "Pic": "http://mhfm6218us.cdndm5.com/7/6213/20160906153542_320x246_36.jpg",
+            "Title": "劍持警部殺人事件",
+            "LastUpdateInfo": "第12话",
+            "LastPartShowName": "第12话",
+            "Mid": 6213,
+            "ReadUrl": "",
+            "BigPic": "http://mhfm3218us.cdndm5.com/7/6213/6213.jpg",
+            "Content": "金田一的又一新連載....",
+            "TagList": ["悬疑"],
+            "LastPartUrl": "m65814",
+            "AuthorUrl": ["/search?title=%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8&language=1&f=2"],
+            "LastPartTime": "2009-07-23",
+            "AddTime": "2009-07-23",
+            "Categorys": "少年热血,侦探推理",
+            "Score": null,
+            "Status": "连载中"
+          }, {
+            "Id": 789,
+            "Author": ["佐藤文也"],
+            "Url": "/manhua-jintianyishaonianzhishijianbu789/",
+            "Pic": "http://mhfm9218us.cdndm5.com/1/789/789.jpg",
+            "Title": "明智少年之優雅犀利事件簿",
+            "LastUpdateInfo": "SPECIAL STORY 明智警视优雅的早晨情景（全新短篇）",
+            "LastPartShowName": "SPECIAL STORY 明智警视优雅的早晨情景（全新短篇）",
+            "Mid": 789,
+            "ReadUrl": "",
+            "BigPic": "http://mhfm9218us.cdndm5.com/1/789/789.jpg",
+            "Content": "他擁有華麗俊俏的外表和樣樣皆能的身手、更有著精密無比的頭腦。他是最完美的警察化身,他是金田一最討厭的對手,他是明智健悟。 《金田一少年之事件簿》裡頭最搶鏡的配角,比金田一毫不遜色的魅力。想要知道明智的成長與故事嗎？包...",
+            "TagList": [],
+            "LastPartUrl": "m9008",
+            "AuthorUrl": ["/search?title=%e4%bd%90%e8%97%a4%e6%96%87%e4%b9%9f&language=1&f=2"],
+            "LastPartTime": "2006-08-19",
+            "AddTime": "2006-08-19",
+            "Categorys": "侦探推理",
+            "Score": null,
+            "Status": "已完结"
+          }, {
+            "Id": 18097,
+            "Author": ["佐藤文也 天樹徵丸"],
+            "Url": "/manhua-jintianyixixueying/",
+            "Pic": "http://mhfm4218us.cdndm5.com/19/18097/20150414101503_180x240_29.jpg",
+            "Title": "金田一吸血櫻",
+            "LastUpdateInfo": "第4话",
+            "LastPartShowName": "第4话",
+            "Mid": 18097,
+            "ReadUrl": "",
+            "BigPic": "http://mhfm4218us.cdndm5.com/19/18097/20150414101503_180x240_29.jpg",
+            "Content": "少年偵探漫畫金田一吸血櫻",
+            "TagList": ["悬疑"],
+            "LastPartUrl": "m202975",
+            "AuthorUrl": ["/search?title=%e4%bd%90%e8%97%a4%e6%96%87%e4%b9%9f++%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8+&language=1&f=2"],
+            "LastPartTime": "2015-05-22",
+            "AddTime": "2015-04-14",
+            "Categorys": "少年热血",
+            "Score": null,
+            "Status": "连载中"
+          }] : this.searchComicsList;
         }
-      });
-    }
-  </script>
-
-
-  <script type="text/javascript">
-    //basic JS
-    $(document).ready(function() {
-      // $('#tagX').tagsInput({
-      //   'width': 'auto',
-      //   'autocomplete_url': 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec',
-      //   //'autocomplete_url': 'fake.json',
-      // });
+      }
     });
-
-
-
-    function clickStart(index) {
-      //★
-      clearStart();
-      // hide = index
-
-      for (var i = 1; i <= index; i++) {
-        var span = document.getElementById('start' + i);
-        //alert('span-->'+span)
-        span.innerHTML = '★';
-      }
-
-      var stars = document.getElementById('stars');
-      stars.innerHTML = index;
-      // var starsInput = document.getElementById('starsInput');
-      // starsInput.value = index;
-    }
-
-
-
-    function clearStart() {
-      //★
-      // hide = index
-      for (var i = 1; i <= 5; i++) {
-        var span = document.getElementById('start' + i);
-        span.innerHTML = '☆';
-      }
-
-    }
-    //-->
-  </script>
-
-
-
-
-</body>
+  }
+</script>
 
 </html>
