@@ -606,7 +606,7 @@
           then(function(res) {
             console.log(res);
             this.ajaxData = res.body;
-            if (this.nowAtComic) {
+            if (this.nowAtComic || type == 'reload') {
               this.comicsList = this.ajaxData;
             } else {
               this.searchComicsList = this.searchComicsList.concat(this.ajaxData);
