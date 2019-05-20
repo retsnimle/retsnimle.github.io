@@ -63,9 +63,8 @@
               <h5 class="mt-0">{{selectSearchData.Title}}</h5>
               <p>{{selectSearchData.Author.join()}}</p>
               <p><span class="book-list-info-bottom-item" id="selectCategorys">{{selectSearchData.Categorys}}</span>
-                <span>(</span>
-                <span class="book-list-info-bottom-right-font text-right" id="selectStatus">{{selectSearchData.Status}}</span>
-                <span>)</span>
+
+                <span class="badge badge-pill badge-primary" v-show="selectSearchData.Status === '已完结'">已完結</span>
               </p>
             </div>
           </div>
@@ -132,10 +131,97 @@
 
 
 
+
+    <!-- 評論Modal -->
+    <div class="modal fade" id="comiccommentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <modal-item>
+        <div class="modal-body" id='comicDetail'>
+
+          <div class="media">
+            <img class="col-4" :src="selectCommentData.BigPic" alt="Generic placeholder image">
+            <div class="media-body">
+              <h5 class="mt-0">{{selectCommentData.Title}}</h5>
+              <p>{{selectCommentData.Author}}</p>
+              <p class="card-subtitle mb-2 text-muted">推薦人：{{selectCommentData.userName}} <span class='text-warning' v-for="n in parseInt(selectCommentData.stars)">★</span><span v-for="n in parseInt(3-selectCommentData.stars)">☆</span></p>
+              <!-- <p></p> -->
+              <span class="cursor_pointer badge badge-secondary text-white mr-1 mt-1" v-for="tag in selectCommentData.tags.split(',')">{{tag}}</span>
+            </div>
+          </div>
+          <ul class="list-group mt-1">
+            <comment-item v-for="(comment,index) in commentFlited" :comment="comment" :index="index" @change-comment='changeComment($event)' @delete-comment='deleteComment($event)'></comment-item>
+
+            <a class="list-group-item list-group-item-action list-group-item-success text-center" data-toggle="collapse" href="#commentForm" role="button" aria-expanded="false">
+              我也要留言
+            </a>
+
+          </ul>
+        </div>
+
+
+
+        <div class="collapse" id="commentForm">
+          <form id="comment" class="px-2">
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="userName">推薦者<span class="text-danger"><small>(必填)</small></span></label>
+                <input type="email" class="form-control" v-model="comment.userName" placeholder="請盡量保持名稱一致">
+              </div>
+
+              <div class="form-group col-md-6">
+                <label for="userName">推薦星數</label>
+                <p>
+                  <span @click='comment.stars = 1' id='start1' class='cursor_pointer' :class="parseInt(comment.stars)>=1 ?'text-warning':''">{{parseInt(comment.stars)>=1 ?'★' :'☆'}}</span>
+                  <span @click='comment.stars = 2' id='start2' class='cursor_pointer' :class="parseInt(comment.stars)>=2 ?'text-warning':''">{{parseInt(comment.stars)>=2 ?'★' :'☆'}}</span>
+                  <span @click='comment.stars = 3' id='start3' class='cursor_pointer' :class="parseInt(comment.stars)>=3 ?'text-warning':''">{{parseInt(comment.stars)>=3 ?'★' :'☆'}}</span>
+                  <span>{{(comment.stars == 1)?'（不錯看。）':''}}{{(comment.stars == 2)?'（超好看！）':''}}{{(comment.stars == 3)?'（人生必看！！）':''}}</span></p>
+
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="userName">新增/刪除標籤<span class="text-danger"><small>(不想更改就不動就好)</small></span></label>
+              <input type="text" id="tagscomment">
+              <p>熱門標籤：
+                <button type="button" class="btn btn-info btn-sm mr-1 mt-1" v-for="tag in tagsShow" @click="addTagcomment(tag[0])">
+                  {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
+                </button>
+                <small class="text-muted cursor_pointer" v-show="!tagsShowMoreOrNot" @click='tagsShowMoreOrNot = true'>展開全部…</small>
+
+                <button type="button" class="btn btn-info btn-sm mr-1 mt-1" v-show="tagsShowMoreOrNot" v-for="tag in tagsHide" @click="addTagcomment(tag[0])">
+                  {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
+                </button>
+
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label for="userComment">留言內容</label>
+              <textarea class="form-control" v-model="comment.userComment" rows="3"></textarea>
+            </div>
+
+            <div class="form-group row">
+              <label for="deletePw" class="col-sm-2 col-form-label">文章密碼</label>
+              <div class="col-sm-10">
+                <input type="password" class="form-control" v-model='comment.pw' placeholder="修改或刪除評論時需要的一次性密碼">
+              </div>
+            </div>
+
+          </form>
+
+          <div class="modal-footer">
+            <span class="text-danger">{{comment.warning}}</span>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            <button type="button" class="btn" :class="[ loading? 'btn-secondary': 'btn-primary' ]" id="sendComment" @click="sendComment('addComment')">確定送出</button>
+          </div>
+        </div>
+      </modal-item>
+    </div>
+
+
+
     <!-- 主要顯示頁面在此 -->
     <div class="container" v-show="nowAtComic">
       <div class='row'>
-        <comic-card-item v-for="comic in comicsListDev" :comic="comic">
+        <comic-card-item @comic-detail-select='opencommentDetail($event)' v-for="(comic,index) in comicsListDev" :comic="comic" :index="index">
         </comic-card-item>
       </div>
     </div>
@@ -172,7 +258,7 @@
       },
       methods: {
         openModel: function() {
-          $('#comicDetailModal').modal('show');
+          $('#comiccommentModal').modal('show');
         }
       },
 
@@ -220,11 +306,13 @@
 
 
     Vue.component('comic-card-item', {
-      props: ['comic'],
+      props: ['comic', 'index'],
       template: `
-      <div class="col-md-6 col-lg-4 pb-3" >
-        <div class="card" style="//width: 18rem;">
-          <div class="card-body">
+      <div class="col-md-6 col-lg-4 pb-2 px-1">
+        <div class="card">
+
+          <div class="card-body" @click="$emit('comic-detail-select', index)">
+
             <div class="media">
               <img class="col-5" :src="comic[6]" alt="Generic placeholder image">
               <div class="media-body col-7">
@@ -233,9 +321,30 @@
                 <span class='text-warning' v-for="n in parseInt(comic[5])">★</span><span v-for="n in parseInt(3-comic[5])">☆</span>
               </div>
             </div>
+
           </div>
+          <div class="card-footer">
+            <a class="cursor_pointer badge badge-secondary text-white mr-1 mt-1" v-for="tag in comic[4].split(',')" >{{tag}}</a>
+          </div>
+
+
         </div>
       </div>
+      `
+    });
+
+    Vue.component('comment-item', {
+      props: ['comment', 'index'],
+      template: `
+      <li class="list-group-item">
+        <h6>{{comment[3]}}(<span class='text-warning' v-for="n in parseInt(comment[2])">★</span><span v-for="n in parseInt(3-comment[2])">☆</span>)：
+          <a class="badge badge-primary text-white" @click="$emit('change-comment', comment[0])">修改</a>
+          <a class="badge badge-danger text-white" @click="$emit('delete-comment', comment[0])">刪除</a>
+        </h6>
+        {{comment[4]}}
+
+
+      </li>
       `
     });
 
@@ -267,18 +376,18 @@
       props: ['comic', 'index'],
       template: `
       <div class="col-6 col-sm-4 col-md-3 pb-3">
-        <div class="card text-center" style="//width: 18rem;">
+        <div class="card text-center" style="//width: 18rem;" @click="$emit('search-select', index)">
           <img class="card-img-top" :src="comic.BigPic">
           <div class="card-body">
-            <p class="card-text text-truncate">{{comic.Title}}<br><span class="text-muted">{{comic.Author.join()}}</span></p>
+            <p class="card-text text-truncate">{{comic.Title}}<br><span class="text-muted">{{comic.Author.join()}}</span>  <span class="badge badge-pill badge-primary" v-show="comic.Status === '已完结'">已完結</span></p>
 
           </div>
-          <div class="card-footer bg-success text-white cursor_pointer"
+          <!--<div class="card-footer bg-success text-white cursor_pointer"
           @click="$emit('search-select', index)"
           >
-            <!-- <p class="bookbtn btn btn-outline-success" >選擇</p> -->
+
             選擇漫畫
-          </div>
+          </div> -->
         </div>
       </div>
       `
@@ -299,7 +408,14 @@
         searchComicData: {
           loadPage: 1,
           comicName: '',
-          select: 0
+          select: 0,
+          tagsOn: false,
+        },
+        commentComicData: {
+          fType: '',
+          ft: '',
+          select: 0,
+          tagsOn: false,
         },
 
         comment: {
@@ -310,8 +426,10 @@
           pw: '',
           warning: '',
           tagsOn: false,
-          tagsShowMoreOrNot: false
+          tagsShowMoreOrNot: false,
+          Id: 0
         },
+        comments: [],
         tags: [],
         showOrNot: false,
         tagsShowMoreOrNot: false
@@ -323,11 +441,11 @@
       methods: {
         openSearchDetail: function(num) {
           this.searchComicData.select = num;
-          if (this.comment.tagsOn === false) {
+          if (this.searchComicData.tagsOn === false) {
             $('#tags').tagsInput({
               'width': 'auto',
             });
-            this.comment.tagsOn = true;
+            this.searchComicData.tagsOn = true;
           }
           this.getTags();
           this.comment.warning = '';
@@ -335,9 +453,32 @@
           $('#comicDetailModal').modal('show');
         },
 
+        opencommentDetail: function(num) {
+          this.commentComicData.select = num;
+          if (this.commentComicData.tagsOn === false) {
+            $('#tagscomment').tagsInput({
+              'width': 'auto',
+            });
+            this.commentComicData.tagsOn = true;
+          }
+
+          $('#tagscomment').importTags(this.selectCommentData.tags);
+          this.getTags();
+          this.getComments();
+          this.comment.warning = '';
+          this.comment.tagsShowMoreOrNot = false;
+          this.commentComicData.fType = 'Id';
+          this.commentComicData.ft = this.selectCommentData.Id;
+          console.log(this.commentComicData);
+          $('#comiccommentModal').modal('show');
+        },
+
         // TAG相關
         addTag: function(tag) {
           $('#tags').addTag(tag);
+        },
+        addTagcomment: function(tag) {
+          $('#tagscomment').addTag(tag);
         },
         getTags: function() {
           appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
@@ -358,8 +499,34 @@
           });
         },
 
+        //comment 相關
+        getComments: function() {
+          appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
+          this.loading = true;
+          var getBody = {
+            type: 'commentList'
+          };
+          //發送get請求
+          this.$http.get(appUrl, {
+            params: getBody
+          }).
+          then(function(res) {
+            console.log(res);
+            var ajaxData = res.body;
+            this.comments = ajaxData;
+            console.log(this.comments);
+            this.loading = false;
+          }, function() {
+            console.log('請求失敗處理');
+          });
+        },
 
-
+        changeComment: function(id) {
+          alert(id);
+        },
+        deleteComment: function(id) {
+          alert(id);
+        },
 
         search: function() {
           this.loading = true;
@@ -404,30 +571,70 @@
         },
 
         sendComment: function(type) {
-          this.comment.stars = $('#stars').html();
-          this.comment.tags = $('#tags').val();
-          if (this.comment.stars == 0) {
+
+          if (type === 'addComic') {
+            this.comment.tags = $('#tags').val();
+          } else {
+            this.comment.tags = $('#tagscomment').val();
+          }
+
+
+          if (this.comment.stars == 0 && type == 'addComic') {
             this.comment.warning = '請選擇推薦星數。';
-          } else if (this.comment.tags.length == 0) {
+          } else if (this.comment.tags.length == 0 && type == 'addComic') {
             this.comment.warning = '請至少選擇一個標籤。';
-          } else if (this.comment.userName.length == 0) {
+          } else if (this.comment.userName.length == 0 && type != 'delete') {
             this.comment.warning = '請輸入推薦人。';
+          } else if (this.comment.stars == 0 && this.comment.userComment.length == 0) {
+            this.comment.warning = '星數和留言內容至少擇一輸入。';
           } else {
             this.loading = true;
             appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
-            var postBody = {
-              type: type,
-              userName: this.comment.userName,
-              stars: this.comment.stars,
-              tags: this.comment.tags,
-              pw: this.comment.pw,
-              userComment: this.comment.userComment,
-              title: this.selectSearchData.Title,
-              author: this.selectSearchData.Author.join(),
-              url: this.selectSearchData.Url,
-              bigPic: this.selectSearchData.BigPic,
-              id: this.selectSearchData.Id
-            };
+
+            if (type === 'addComic') {
+              var postBody = {
+                type: type,
+                userName: this.comment.userName,
+                stars: this.comment.stars,
+                tags: this.comment.tags,
+                pw: this.comment.pw,
+                userComment: this.comment.userComment,
+                title: this.selectSearchData.Title,
+                author: this.selectSearchData.Author.join(),
+                url: this.selectSearchData.Url,
+                bigPic: this.selectSearchData.BigPic,
+                id: this.selectSearchData.Id,
+                AddTime: new Date(),
+                Pic: this.selectSearchData.Pic,
+              };
+            } else if (type === 'addComment') {
+              var postBody = {
+                type: type,
+                userName: this.comment.userName,
+                stars: this.comment.stars,
+                tags: this.comment.tags,
+                pw: this.comment.pw,
+                userComment: this.comment.userComment,
+                id: this.selectCommentData.Id,
+              };
+            } else if (type === 'changeComment') {
+              var postBody = {
+                type: type,
+                userName: this.comment.userName,
+                stars: this.comment.stars,
+                tags: this.comment.tags,
+                pw: this.comment.pw,
+                userComment: this.comment.userComment,
+                id: this.comment.Id,
+              };
+            } else if (type === 'delete') {
+              var postBody = {
+                type: type,
+                pw: this.comment.pw,
+                id: this.comment.Id,
+              };
+            }
+
             //發送post請求
             this.$http.post(appUrl, postBody, {
               emulateJSON: true
@@ -443,13 +650,18 @@
                 this.comment.userComment = '';
                 this.comment.tagsShowMoreOrNot = false;
 
-                $('#tags').importTags('');
+
                 this.comment.warning = '';
-                $('#comicDetailModal').modal('hide');
+                if (type === 'addComic') {
+                  $('#tags').importTags('');
+                  $('#comicDetailModal').modal('hide');
+                } else {
+                  //$('#tagscomment').importTags('');
+                }
               } else if (ajaxData.state === 'duplicated') {
                 this.comment.warning = '書單裡面已有這本漫畫囉，去留言吧！';
               } else {
-                this.comment.warning = '有不明錯誤，去問阿歐西吧。';
+                this.comment.warning = ajaxData.state;
               }
             }, function() {
               console.log('請求失敗處理');
@@ -471,9 +683,17 @@
           return tempArr.splice(5);
         },
 
-
-
-
+        commentFlited: function() {
+          var commentArr = this.comments.slice(0);
+          var ft = this.commentComicData.ft;
+          if (this.commentComicData.fType === 'Id') {
+            return commentArr.filter(
+              function(value) {
+                return (value[1] == ft && value[6] == 0) ? true : false;
+              });
+          }
+          return commentArr;
+        },
         selectSearchData: function() {
           if (this.searchComicsList.length != 0) {
             return this.searchComicsList[this.searchComicData.select];
@@ -498,6 +718,38 @@
             "Categorys": "少年热血,侦探推理",
             "Score": null,
             "Status": "连载中"
+          };
+
+        },
+
+        selectCommentData: function() {
+          if (this.comicsList.length != 0) {
+            var selectComic = this.comicsList[this.commentComicData.select];
+
+            return {
+              Id: selectComic[0],
+              Title: selectComic[1],
+              Author: selectComic[2],
+              userName: selectComic[3],
+              tags: selectComic[4],
+              stars: selectComic[5],
+              BigPic: selectComic[6],
+              Url: selectComic[7],
+              AddTime: selectComic[8]
+            }
+          }
+          return {
+            "Id": 40420,
+            "Author": "天",
+            "Url": "/manhua/",
+            "Title": "金田一",
+            "stars": 1,
+            "BigPic": "http://mhfm6218us.cdndm5.com/41/40420/20181011103128_180x240_24.jpg",
+            "Pic": "http://mhfm6218us.cdndm5.com/7/6213/20160906153542_320x246_36.jpg",
+            "userName": "全新的“金田一”",
+            "tags": "悬疑",
+            "LastPartTime": "2019-05-10",
+            "AddTime": "2018-01-21"
           };
 
         },
