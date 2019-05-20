@@ -574,11 +574,15 @@
           $('#commentForm').collapse('show');
         },
 
-        search: function() {
+        search: function(type) {
           this.loading = true;
           appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
 
-          if (!this.nowAtComic) {
+          if (type == 'reload') {
+            var getBody = {
+              type: 'comicList'
+            };
+          } else if (!this.nowAtComic) {
             if (this.searchComicData.comicName !== this.searchText) {
               this.searchComicData.comicName = this.searchText;
               this.searchComicData.loadPage = 1;
@@ -700,7 +704,7 @@
 
                 this.comment.warning = '';
                 if (type === 'addComic') {
-                  this.search();
+                  this.search('reload');
                   $('#tags').importTags('');
                   $('#comicDetailModal').modal('hide');
                 } else {
