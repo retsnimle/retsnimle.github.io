@@ -146,11 +146,11 @@
             <img class="col-4" :src="selectCommentData.BigPic" alt="Generic placeholder image">
             <div class="media-body">
               <h5 class="mt-0">{{selectCommentData.Title}}</h5>
-              <p>{{selectCommentData.Author}}</p>
-              <p class="card-subtitle mb-2 text-muted">推薦人：<span class="cursor_pointer" @click="searchType='user',searchText=selectCommentData.userName">{{selectCommentData.userName}}</span> <span class='text-warning' v-for="n in parseInt(selectCommentData.stars)">★</span><span
+              <p>{{selectCommentData.Author}} <a :href="'https://www.manhuaren.com' + selectCommentData.Url" target="_blank">漫畫人連結</a></p>
+              <p class="card-subtitle mb-2 text-muted">推薦人：<span class="cursor_pointer" @click="searchType='user',searchText=selectCommentData.userName,closeCommentM()">{{selectCommentData.userName}}</span> <span class='text-warning' v-for="n in parseInt(selectCommentData.stars)">★</span><span
                   v-for="n in 3-parseInt(selectCommentData.stars)">☆</span></p>
               <!-- <p></p> -->
-              <span class="cursor_pointer badge badge-secondary text-white mr-1 mt-1" @click="searchType='tag',searchText=tag" v-for="tag in selectCommentData.tags.split(',')">{{tag}}</span>
+              <span class="cursor_pointer badge badge-secondary text-white mr-1 mt-1" @click="searchType='tag',searchText=tag,closeCommentM()" v-for="tag in selectCommentData.tags.split(',')">{{tag}}</span>
             </div>
           </div>
           <ul class="list-group mt-1">
@@ -580,6 +580,9 @@
           this.comment.userComment = '';
           $('#commentForm').collapse('hide');
         },
+        closeCommentM: function() {
+          $('#comiccommentModal').modal('hide');
+        },
 
         addComment: function() {
           this.commentComicData.type = 'addComment';
@@ -820,7 +823,8 @@
         },
 
         selectCommentData: function() {
-          if (this.comicsListFilted.length != 0) {
+          if (this.comicsListFilted.length > this.commentComicData.select) {
+            //console.log(this.comicsListFilted);
             var selectComic = this.comicsListFilted[this.commentComicData.select];
 
             return {
@@ -852,6 +856,7 @@
         comicsListFilted: function() {
           var comicList = this.comicsList.slice(0);
           var text = this.searchText.toLowerCase();
+
           if (!this.nowAtComic || text.length == 0) return comicList;
           if (this.searchType === 'name') {
             return comicList.filter(function(value) {
