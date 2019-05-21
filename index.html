@@ -123,7 +123,7 @@
         <div class="modal-footer">
           <span class="text-danger">{{comment.warning}}</span>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-          <button type="button" class="btn" :class="[ loading? 'btn-secondary': 'btn-primary' ]" id="sendComment" @click="sendComment('addComic')" :disabled="loading">確定送出</button>
+          <button type="button" class="btn" :class="[ loading? 'btn-secondary': 'btn-primary' ]" id="sendComment" @click="sendComment('addComic')" :disabled="loading">{{loading?'處理中……':'確定送出'}}</button>
         </div>
 
       </modal-item>
@@ -214,7 +214,7 @@
           <div class="modal-footer">
             <span class="text-danger">{{comment.warning}}</span>
             <button type="button" class="btn btn-secondary" @click="closeComment()">取消</button>
-            <button type="button" class="btn" :class="[ loading? 'btn-secondary': 'btn-primary' ]" id="sendComment" @click="sendComment(commentComicData.type)" :disabled="loading">確定送出</button>
+            <button type="button" class="btn" :class="[ loading? 'btn-secondary': 'btn-primary' ]" id="sendComment" @click="sendComment(commentComicData.type)" :disabled="loading">{{loading?'處理中……':'確定送出'}}</button>
           </div>
         </div>
       </modal-item>
@@ -223,7 +223,7 @@
 
 
     <!-- 主要顯示頁面在此 -->
-    <div class="container" v-show="nowAtComic">
+    <div class="container" v-show="reloadOrNot">
       <div class='row'>
         <comic-card-item @comic-detail-select='opencommentDetail($event)' v-for="(comic,index) in comicsList" :comic="comic" :index="index">
         </comic-card-item>
@@ -236,7 +236,7 @@
         <searchcomic-card-item @search-select='openSearchDetail($event)' v-for="(comic,index) in searchComicsList" :comic="comic" :index="index">
         </searchcomic-card-item>
       </div>
-      <button class="btn col-md-12 pt-2" v-show="searchComicsList.length != 0" @click="search()" :disabled="loading">載入更多</button>
+      <button class="btn col-md-12 pt-2" v-show="searchComicsList.length != 0" @click="search()" :disabled="loading">{{loading?'讀取中……':'載入更多'}}</button>
     </div>
 
   </div>
@@ -461,9 +461,7 @@
         tagsShowMoreOrNot: false
       },
       created() {
-        this.search();
-        this.getTags();
-        this.getComments();
+
       },
       methods: {
         openSearchDetail: function(num) {
@@ -488,6 +486,10 @@
             });
             this.commentComicData.tagsOn = true;
           }
+          this.commentComicData.type = 'addComment';
+          this.comment.stars = 0;
+          this.comment.userComment = '';
+          $('#commentForm').collapse('hide');
 
           $('#tagscomment').importTags(this.selectCommentData.tags);
           this.comment.warning = '';
@@ -654,7 +656,7 @@
                 url: this.selectSearchData.Url,
                 bigPic: this.selectSearchData.BigPic,
                 id: this.selectSearchData.Id,
-                AddTime: new Date(),
+                AddTime: String(Date()),
                 Pic: this.selectSearchData.Pic,
               };
             } else if (type === 'addComment') {
@@ -742,6 +744,15 @@
           return tempArr.splice(5);
         },
 
+        reloadOrNot: function() {
+          if (this.nowAtComic) {
+            this.search('reload');
+            this.getComments();
+            this.getTags();
+            return true;
+          }
+          return false;
+        },
         commentFlited: function() {
           var commentArr = this.comments.slice(0);
           var ft = this.commentComicData.ft;
