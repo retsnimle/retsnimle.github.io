@@ -857,6 +857,7 @@
         },
         comicsListFilted: function() {
           var comicList = this.comicsList.slice(0);
+          comicList.reverse();
           var text = this.searchText.toLowerCase();
 
           if (!this.nowAtComic || text.length == 0) return comicList;
