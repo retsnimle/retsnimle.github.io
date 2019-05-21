@@ -77,7 +77,7 @@
           <p class="book-list-info-desc" id="selectContent">{{selectSearchData.Content}}</p>
         </div>
 
-        <form id="comment" class="px-2">
+        <form class="px-2">
 
           <div class="form-row">
             <div class="form-group col-md-6">
@@ -294,9 +294,7 @@
 
           </ul>
 
-          <span class="navbar-text">
-            {{valueInput}}{{valueSelect}}
-          </span>
+
 
           <form class="form-inline my-2 my-lg-0" @submit.prevent>
             <div class="input-group">
@@ -324,7 +322,7 @@
     Vue.component('comic-card-item', {
       props: ['comic', 'index'],
       template: `
-      <div class="col-md-6 col-lg-4 pb-2 px-1">
+      <div class="col-md-6 col-lg-4 py-1 px-1">
         <div class="card">
 
           <div class="card-body" @click="$emit('comic-detail-select', index)">
