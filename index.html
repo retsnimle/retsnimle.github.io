@@ -277,7 +277,7 @@
 
       template: `
       <nav class="navbar navbar-expand-sm  navbar-dark bg-dark sticky-top" id='navBar'>
-        <a v-show="!loading" class="navbar-brand text-light" @click="$emit('clear-text')" >{{valueInput.length != 0?'×':'湯'}}</a>
+        <a v-show="!loading" class="navbar-brand text-light cursor_pointer" @click="$emit('clear-text')" >{{valueInput.length != 0?'×':'湯'}}</a>
         <a v-show="loading" class="spinner-border text-light"></a>
         <button class="navbar-toggler" :class="valueInput.length != 0 ? 'bg-warning':''" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
