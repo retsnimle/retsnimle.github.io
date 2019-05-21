@@ -819,7 +819,7 @@
         },
 
         selectCommentData: function() {
-          if (this.comicsList.length != 0) {
+          if (this.comicsListFilted.length != 0) {
             var selectComic = this.comicsListFilted[this.commentComicData.select];
 
             return {
@@ -850,20 +850,17 @@
         },
         comicsListFilted: function() {
           var comicList = this.comicsList.slice(0);
-          if (!this.nowAtComic) return comicList;
           var text = this.searchText.toLowerCase();
+          if (!this.nowAtComic || text.length == 0) return comicList;
           if (this.searchType === 'name') {
-            if (text.length == 0) return comicList;
             return comicList.filter(function(value) {
               return (String(value[1]).toLowerCase().indexOf(text) != -1 || String(value[2]).toLowerCase().indexOf(text) != -1);
             });
           } else if (this.searchType === 'user') {
-            if (text.length == 0) return comicList;
             return comicList.filter(function(value) {
               return String(value[3]).toLowerCase().indexOf(text) != -1;
             });
           } else if (this.searchType === 'tag') {
-            if (text.length == 0) return comicList;
             return comicList.filter(function(value) {
               return String(value[4]).toLowerCase().indexOf(text) != -1;
             });
