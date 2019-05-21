@@ -49,6 +49,7 @@
     @now-at-comic-false='nowAtComic = false'
     @now-at-comic-true='nowAtComic = true'
     @dev = 'dev = !dev'
+    @clear-text = "searchText = ''"
     @get-search='search'
     :value-input="searchText"
     @text-input="searchText = $event"
@@ -147,8 +148,8 @@
             <div class="media-body">
               <h5 class="mt-0">{{selectCommentData.Title}}</h5>
               <p>{{selectCommentData.Author}} <a :href="'https://www.manhuaren.com' + selectCommentData.Url" target="_blank">漫畫人連結</a></p>
-              <p class="card-subtitle mb-2 text-muted">推薦人：<span class="cursor_pointer" @click="searchType='user',searchText=selectCommentData.userName,closeCommentM()">{{selectCommentData.userName}}</span> <span class='text-warning' v-for="n in parseInt(selectCommentData.stars)">★</span><span
-                  v-for="n in 3-parseInt(selectCommentData.stars)">☆</span></p>
+              <p class="card-subtitle mb-2 text-muted">推薦人：<span class="cursor_pointer" @click="userNameC = selectCommentData.userName,searchText=userNameC,searchType='user',closeCommentM()">{{selectCommentData.userName}}</span> <span class='text-warning'
+                  v-for="n in parseInt(selectCommentData.stars)">★</span><span v-for="n in 3-parseInt(selectCommentData.stars)">☆</span></p>
               <!-- <p></p> -->
               <span class="cursor_pointer badge badge-secondary text-white mr-1 mt-1" @click="searchType='tag',searchText=tag,closeCommentM()" v-for="tag in selectCommentData.tags.split(',')">{{tag}}</span>
             </div>
@@ -275,10 +276,10 @@
 
 
       template: `
-      <nav class="navbar navbar-expand-sm navbar-light bg-light sticky-top" id='navBar'>
-        <a v-show="!loading" class="navbar-brand">湯</a>
-        <a v-show="loading" class="spinner-border"></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <nav class="navbar navbar-expand-sm  navbar-dark bg-dark sticky-top" id='navBar'>
+        <a v-show="!loading" class="navbar-brand text-light" @click="$emit('clear-text')" >{{valueInput.length != 0?'×':'湯'}}</a>
+        <a v-show="loading" class="spinner-border text-light"></a>
+        <button class="navbar-toggler" :class="valueInput.length != 0 ? 'bg-warning':''" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -450,6 +451,7 @@
         nowAtComic: true,
         searchText: '',
         searchType: 'name',
+        userNameC: '',
         loading: false,
         dev: false,
 
