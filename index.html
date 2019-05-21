@@ -850,6 +850,7 @@
         },
         comicsListFilted: function() {
           var comicList = this.comicsList.slice(0);
+          if (!this.nowAtComic) return comicList;
           var text = this.searchText.toLowerCase();
           if (this.searchType === 'name') {
             if (text.length == 0) return comicList;
