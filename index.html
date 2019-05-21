@@ -820,7 +820,7 @@
 
         selectCommentData: function() {
           if (this.comicsList.length != 0) {
-            var selectComic = this.comicsList[this.commentComicData.select];
+            var selectComic = this.comicsListFilted[this.commentComicData.select];
 
             return {
               Id: selectComic[0],
