@@ -50,7 +50,12 @@
     @now-at-comic-true='nowAtComic = true'
     @dev = 'dev = !dev'
     @get-search='search'
-    v-model="searchText"></navbar-item>
+    :value-input="searchText"
+    @text-input="searchText = $event"
+
+    :value-select="searchType"
+    @select-change="searchType = $event"
+    ></navbar-item>
 
     <!-- 搜尋Modal -->
     <div class="modal fade" id="comicDetailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -142,9 +147,10 @@
             <div class="media-body">
               <h5 class="mt-0">{{selectCommentData.Title}}</h5>
               <p>{{selectCommentData.Author}}</p>
-              <p class="card-subtitle mb-2 text-muted">推薦人：{{selectCommentData.userName}} <span class='text-warning' v-for="n in parseInt(selectCommentData.stars)">★</span><span v-for="n in 3-parseInt(selectCommentData.stars)">☆</span></p>
+              <p class="card-subtitle mb-2 text-muted">推薦人：<span class="cursor_pointer" @click="searchType='user',searchText=selectCommentData.userName">{{selectCommentData.userName}}</span> <span class='text-warning' v-for="n in parseInt(selectCommentData.stars)">★</span><span
+                  v-for="n in 3-parseInt(selectCommentData.stars)">☆</span></p>
               <!-- <p></p> -->
-              <span class="cursor_pointer badge badge-secondary text-white mr-1 mt-1" v-for="tag in selectCommentData.tags.split(',')">{{tag}}</span>
+              <span class="cursor_pointer badge badge-secondary text-white mr-1 mt-1" @click="searchType='tag',searchText=tag" v-for="tag in selectCommentData.tags.split(',')">{{tag}}</span>
             </div>
           </div>
           <ul class="list-group mt-1">
@@ -156,7 +162,6 @@
 
           </ul>
         </div>
-        <div id="here"></div>
 
 
         <div class="collapse" id="commentForm">
@@ -225,7 +230,7 @@
     <!-- 主要顯示頁面在此 -->
     <div class="container" v-show="reloadOrNot">
       <div class='row'>
-        <comic-card-item @comic-detail-select='opencommentDetail($event)' v-for="(comic,index) in comicsList" :comic="comic" :index="index">
+        <comic-card-item @comic-detail-select='opencommentDetail($event)' v-for="(comic,index) in comicsListFilted" :comic="comic" :index="index" @tag-select="searchType='tag',searchText=$event" @user-select="searchType='user',searchText=$event">
         </comic-card-item>
       </div>
     </div>
@@ -251,7 +256,8 @@
 
       props: [
         'nowAtComic',
-        'value',
+        'valueInput',
+        'valueSelect',
         'loading',
         'dev'
       ],
@@ -288,11 +294,22 @@
 
           </ul>
 
+          <span class="navbar-text">
+            {{valueInput}}{{valueSelect}}
+          </span>
+
           <form class="form-inline my-2 my-lg-0" @submit.prevent>
             <div class="input-group">
-              <input type="search" class="form-control" v-bind:value="value" v-on:input="$emit('input', $event.target.value)" @keyup.enter="$emit('get-search')" placeholder="請輸入漫畫名稱/作者">
+
+                <select v-show="nowAtComic" class="custom-select col-3" :value="valueSelect" @input="$emit('select-change', $event.target.value)">
+                  <option value="name">漫畫名稱</option>
+                  <option value="user">推薦人</option>
+                  <option value="tag">標籤</option>
+                </select>
+
+              <input type="search" class="form-control" :value="valueInput" @input="$emit('text-input', $event.target.value)" @keyup.enter="$emit('get-search')" placeholder="請輸入漫畫名稱/作者">
               <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" :disabled="(loading || value.length === 0)" @click="$emit('get-search')">search</button>
+                <button class="btn btn-outline-secondary" type="button" :disabled="(loading || valueInput.length === 0)" @click="$emit('get-search')">search</button>
               </div>
             </div>
           </form>
@@ -324,7 +341,9 @@
 
           </div>
           <div class="card-footer">
-            <a class="cursor_pointer badge badge-secondary text-white mr-1 mt-1" v-for="tag in comic[4].split(',')" >{{tag}}</a>
+            <a class="cursor_pointer badge badge-secondary text-white mr-1 mt-1"
+            @click="$emit('tag-select', tag)"
+            v-for="tag in comic[4].split(',')" >{{tag}}</a>
           </div>
 
 
@@ -360,11 +379,20 @@
         }
       },
       template: `
+
       <li class="list-group-item" :class="select?'list-group-item-success':''">
-        <h6>{{comment[3]}}(<span class='text-warning' v-for="n in parseInt(comment[2])">★</span><span v-for="n in 3-parseInt(comment[2])">☆</span>)：
-          <a class="badge badge-primary text-white" @click="changeComment()">修改</a>
-          <a class="badge badge-danger text-white" @click="deleteComment()">刪除</a>
-        </h6>
+        <div class="d-flex">
+        <span class="mr-auto"><strong>{{comment[3]}}</strong>
+          <span v-show='comment[2] != 0'>
+            (<span class='text-warning' v-for="n in parseInt(comment[2])">★</span><span v-for="n in 3-parseInt(comment[2])">☆</span>)
+          </span>
+          ：
+        </span>
+        <span class="align-middle">
+          <a class="badge badge-primary text-white cursor_pointer" @click="changeComment()">修改</a>
+          <a class="badge badge-danger text-white cursor_pointer" @click="deleteComment()">刪除</a>
+        </span>
+        </div>
         {{select?'已選擇此評論，請向下捲動到最底':comment[4]}}
 
 
@@ -423,6 +451,7 @@
       data: {
         nowAtComic: true,
         searchText: '',
+        searchType: 'name',
         loading: false,
         dev: false,
 
@@ -496,7 +525,7 @@
           this.comment.tagsShowMoreOrNot = false;
           this.commentComicData.fType = 'Id';
           this.commentComicData.ft = this.selectCommentData.Id;
-          console.log(this.commentComicData);
+          //console.log(this.commentComicData);
           $('#comiccommentModal').modal('show');
         },
 
@@ -517,10 +546,10 @@
             params: getBody
           }).
           then(function(res) {
-            console.log(res);
+            //console.log(res);
             var ajaxData = res.body;
             this.tags = ajaxData;
-            console.log(this.tags);
+            //console.log(this.tags);
           }, function() {
             console.log('請求失敗處理');
           });
@@ -538,10 +567,10 @@
             params: getBody
           }).
           then(function(res) {
-            console.log(res);
+            //console.log(res);
             var ajaxData = res.body;
             this.comments = ajaxData;
-            console.log(this.comments);
+            //console.log(this.comments);
             this.loading = false;
           }, function() {
             console.log('請求失敗處理');
@@ -606,7 +635,7 @@
             params: getBody
           }).
           then(function(res) {
-            console.log(res);
+            //console.log(res);
             this.ajaxData = res.body;
             if (this.nowAtComic || type == 'reload') {
               this.comicsList = this.ajaxData;
@@ -693,7 +722,7 @@
               emulateJSON: true
             }).
             then(function(res) {
-              console.log(res);
+              //console.log(res);
               this.loading = false;
 
               var ajaxData = res.body;
@@ -820,227 +849,27 @@
             "LastPartTime": "2019-05-10",
             "AddTime": "2018-01-21"
           };
-
         },
-
-        comicsListDev: function() {
-          return (this.dev) ? [
-            ["34944", "兩隻兔子", "山うた", "歐西女友", "愛情,胃痛,不死身", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
-            ["18258", "虛構推理", "城平京,片瀨茶柴", "歐西女友", "愛情,推理,不死身,妖怪,合法蘿莉", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
-            ["18417", "輝夜大小姐想讓我告白 ~天才們的戀愛頭腦戰~", "赤坂アカ", "歐西女友", "愛情,喜劇,真香", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
-            ["15043", "哈庫梅伊與蜜珂析", "樫木祐人", "歐西女友", "奇幻,動物,職業", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
-            ["16769", "少女終末旅行", "つくみず", "歐西女友", "胃痛,治癒,哲學", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
-            ["12072", "帝一之國", "古屋兔丸", "歐西女友", "好基友,喜劇,校園", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
-            ["15616", "迷宮飯", "九井諒子", "歐西女友", "奇幻,食譜,真香,顏藝,街舞精靈", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
-            ["13915", "ARTE", "大久保圭", "歐西女友", "職業", "3", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
-            ["7947", "JOJO奇妙冒險第8部", "荒木飛呂彥", "sss", "胃痛,喜劇,愛情,不死身", "2", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
-            ["595", "金田一短篇集", "天樹徵丸,佐藤文", "sss", "胃痛", "1", "http://mhfm2218us.cdndm5.com/43/42596/20190517215136_180x240_24.jpg"],
-            ["4684", "第一神拳", "森川讓次", "5555", "胃痛", "2", "http://mhfm8218us.cdndm5.com/5/4684/4684_b.jpg"]
-          ] : this.comicsList;
+        comicsListFilted: function() {
+          var comicList = this.comicsList.slice(0);
+          var text = this.searchText.toLowerCase();
+          if (this.searchType === 'name') {
+            if (text.length == 0) return comicList;
+            return comicList.filter(function(value) {
+              return (String(value[1]).toLowerCase().indexOf(text) != -1 || String(value[2]).toLowerCase().indexOf(text) != -1);
+            });
+          } else if (this.searchType === 'user') {
+            if (text.length == 0) return comicList;
+            return comicList.filter(function(value) {
+              return String(value[3]).toLowerCase().indexOf(text) != -1;
+            });
+          } else if (this.searchType === 'tag') {
+            if (text.length == 0) return comicList;
+            return comicList.filter(function(value) {
+              return String(value[4]).toLowerCase().indexOf(text) != -1;
+            });
+          }
         },
-        searchComicsListDev: function() {
-          return (this.dev) ? [{
-            "Id": 40420,
-            "Author": ["天樹徵丸"],
-            "Url": "/manhua-jintianyi-37-suishijianbu/",
-            "Pic": "http://mhfm4218us.cdndm5.com/41/40420/20181011103215_320x246_40.jpg",
-            "Title": "金田一37歲事件簿",
-            "LastUpdateInfo": "第31话:双胞胎姐妹",
-            "LastPartShowName": "第31话",
-            "Mid": 40420,
-            "ReadUrl": "",
-            "BigPic": "http://mhfm6218us.cdndm5.com/41/40420/20181011103128_180x240_24.jpg",
-            "Content": "從臟兮兮的房間開始的，全新的“金田一”系列！ ！ ！ 37歲的“阿一”他成長為了怎樣的大人呢！ ？",
-            "TagList": ["悬疑"],
-            "LastPartUrl": "m819080",
-            "AuthorUrl": ["/search?title=%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8&language=1&f=2"],
-            "LastPartTime": "2019-05-10",
-            "AddTime": "2018-01-21",
-            "Categorys": "少年热血,侦探推理",
-            "Score": null,
-            "Status": "连载中"
-          }, {
-            "Id": 4743,
-            "Author": ["天樹徵丸"],
-            "Url": "/manhua-jintianyishaonianshijianbu-2008/",
-            "Pic": "http://mhfm4218us.cdndm5.com/5/4743/20151119141239_320x246_34.jpg",
-            "Title": "金田一少年事件簿2008",
-            "LastUpdateInfo": "第192话:白蛇酒窖杀人事件11",
-            "LastPartShowName": "第192话",
-            "Mid": 4743,
-            "ReadUrl": "",
-            "BigPic": "http://mhfm1218us.cdndm5.com/5/4743/4743_b.jpg",
-            "Content": "名偵探金田一一再次來到我們面前，怎麼樣的故事 什麼樣子的謎團等著我們。",
-            "TagList": ["悬疑", "热血"],
-            "LastPartUrl": "m406440",
-            "AuthorUrl": ["/search?title=%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8&language=1&f=2"],
-            "LastPartTime": "2016-09-10",
-            "AddTime": "2010-09-03",
-            "Categorys": "少年热血,侦探推理",
-            "Score": null,
-            "Status": "连载中"
-          }, {
-            "Id": 552,
-            "Author": ["天樹徵丸", "佐藤文"],
-            "Url": "/manhua-jintianshaonianshijianbao/",
-            "Pic": "http://mhfm5218us.cdndm5.com/1/552/20160309115709_320x246_35.jpg",
-            "Title": "金田一少年事件薄",
-            "LastUpdateInfo": "解谜书—挑战高难度事件吧！",
-            "LastPartShowName": "解谜书—挑战高难度事件吧！",
-            "Mid": 552,
-            "ReadUrl": "",
-            "BigPic": "http://mhfm4218us.cdndm5.com/1/552/20150414152939_180x240_19.jpg",
-            "Content": "金田一少年之事件簿漫畫，主角是名偵探金田一耕助的孫子金田一一和青梅竹馬“好友”七瀨美雪、警察“朋友”劍持勇警部、“對手”明智健悟警視等夥伴，運用高超的推理能力，解決遭遇到的各種困難案件。 IQ180的天才少年金田一，面...",
-            "TagList": ["悬疑"],
-            "LastPartUrl": "m505751",
-            "AuthorUrl": ["/search?title=%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8&language=1&f=2", "/search?title=%e4%bd%90%e8%97%a4%e6%96%87&language=1&f=2"],
-            "LastPartTime": "2017-07-26",
-            "AddTime": "2006-08-19",
-            "Categorys": "侦探推理",
-            "Score": null,
-            "Status": "连载中"
-          }, {
-            "Id": 15416,
-            "Author": ["金田一蓮十郎"],
-            "Url": "/manhua-haichayiqiudenanren/",
-            "Pic": "http://mhfm4218us.cdndm5.com/16/15416/15416_b.jpg",
-            "Title": "還差一球的男人",
-            "LastUpdateInfo": "第1话",
-            "LastPartShowName": "第1话",
-            "Mid": 15416,
-            "ReadUrl": "",
-            "BigPic": "http://mhfm4218us.cdndm5.com/16/15416/15416_b.jpg",
-            "Content": "還差一球的男人 金田一蓮十郎最新短篇！主人公是還差一次就能完成2000安打的職業棒球選手夏燒。由於比賽時發生的衝突事故和久病的影響而被勸引退的他為了光榮引退，以2000安打為目標而奮鬥。",
-            "TagList": [],
-            "LastPartUrl": "m162506",
-            "AuthorUrl": ["/search?title=%e9%87%91%e7%94%b0%e4%b8%80%e8%8e%b2%e5%8d%81%e9%83%8e&language=1&f=2"],
-            "LastPartTime": "2014-05-20",
-            "AddTime": "2014-05-20",
-            "Categorys": "运动竞技",
-            "Score": null,
-            "Status": "已完结"
-          }, {
-            "Id": 1456,
-            "Author": ["金田一蓮十郎"],
-            "Url": "/manhua-redaiyulindebaoxiaoshenghuo-diyibu/",
-            "Pic": "http://mhfm6218us.cdndm5.com/2/1456/1456_b.jpg",
-            "Title": "熱帶雨林的爆笑生活[第一部]",
-            "LastUpdateInfo": "第10卷",
-            "LastPartShowName": "第10卷",
-            "Mid": 1456,
-            "ReadUrl": "",
-            "BigPic": "http://mhfm6218us.cdndm5.com/2/1456/1456_b.jpg",
-            "Content": "熱帶雨林的爆笑生活(6張)小晴，一個平凡的男孩，和有點不負責的媽媽——維達生活在熱帶的雨林中，每天都是在摘香蕉，打遊戲，在學校和瞌睡老師與一群傻傻的同學打交道中度過。一天，維達打發小晴去摘香蕉，他卻遇見了一奇怪而巨大...",
-            "TagList": [],
-            "LastPartUrl": "m17085",
-            "AuthorUrl": ["/search?title=%e9%87%91%e7%94%b0%e4%b8%80%e8%8e%b2%e5%8d%81%e9%83%8e&language=1&f=2"],
-            "LastPartTime": "2006-08-31",
-            "AddTime": "2006-08-31",
-            "Categorys": "幽默爆笑",
-            "Score": null,
-            "Status": "已完结"
-          }, {
-            "Id": 595,
-            "Author": ["天樹徵丸", "佐藤文"],
-            "Url": "/manhua-jintianyiduanpianji/",
-            "Pic": "http://mhfm1218us.cdndm5.com/1/595/20161110151919_320x246_44.jpg",
-            "Title": "金田一短篇集",
-            "LastUpdateInfo": "第6卷",
-            "LastPartShowName": "第6卷",
-            "Mid": 595,
-            "ReadUrl": "",
-            "BigPic": "http://mhfm8218us.cdndm5.com/1/595/595_b.jpg",
-            "Content": "金田一短篇集漫畫，故事承接正篇，共6冊，分別以金田一的挑戰、推理、冒險、疾走、對決、回想等以個案形式推出，謎團真相一口氣解開！歡迎在線觀看！",
-            "TagList": ["悬疑"],
-            "LastPartUrl": "m6907",
-            "AuthorUrl": ["/search?title=%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8&language=1&f=2", "/search?title=%e4%bd%90%e8%97%a4%e6%96%87&language=1&f=2"],
-            "LastPartTime": "2006-08-19",
-            "AddTime": "2006-08-19",
-            "Categorys": "侦探推理",
-            "Score": null,
-            "Status": "已完结"
-          }, {
-            "Id": 549,
-            "Author": ["天樹徵丸", "佐藤文"],
-            "Url": "/manhua-jintianyixinban/",
-            "Pic": "http://mhfm8218us.cdndm5.com/1/549/20160317134611_320x246_31.jpg",
-            "Title": "金田一新版",
-            "LastUpdateInfo": "第10卷",
-            "LastPartShowName": "第10卷",
-            "Mid": 549,
-            "ReadUrl": "",
-            "BigPic": "http://mhfm1218us.cdndm5.com/1/549/549.jpg",
-            "Content": "現今懸疑推理小說大受歡迎，小說界和漫畫界當中，捲起了一股“偵探風”，而助長這股熱潮的最大動力就是這位智商180的天才——金田一一！這位名偵探金田一耕助的孫子，繼承了家族的遺傳，擁有超凡的推理能力及洞察力，把無數辣手的...",
-            "TagList": ["悬疑"],
-            "LastPartUrl": "m6285",
-            "AuthorUrl": ["/search?title=%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8&language=1&f=2", "/search?title=%e4%bd%90%e8%97%a4%e6%96%87&language=1&f=2"],
-            "LastPartTime": "2006-08-19",
-            "AddTime": "2007-08-05",
-            "Categorys": "侦探推理",
-            "Score": null,
-            "Status": "已完结"
-          }, {
-            "Id": 6213,
-            "Author": ["天樹徵丸"],
-            "Url": "/manhua-jianchijingbusharenshijian/",
-            "Pic": "http://mhfm6218us.cdndm5.com/7/6213/20160906153542_320x246_36.jpg",
-            "Title": "劍持警部殺人事件",
-            "LastUpdateInfo": "第12话",
-            "LastPartShowName": "第12话",
-            "Mid": 6213,
-            "ReadUrl": "",
-            "BigPic": "http://mhfm3218us.cdndm5.com/7/6213/6213.jpg",
-            "Content": "金田一的又一新連載....",
-            "TagList": ["悬疑"],
-            "LastPartUrl": "m65814",
-            "AuthorUrl": ["/search?title=%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8&language=1&f=2"],
-            "LastPartTime": "2009-07-23",
-            "AddTime": "2009-07-23",
-            "Categorys": "少年热血,侦探推理",
-            "Score": null,
-            "Status": "连载中"
-          }, {
-            "Id": 789,
-            "Author": ["佐藤文也"],
-            "Url": "/manhua-jintianyishaonianzhishijianbu789/",
-            "Pic": "http://mhfm9218us.cdndm5.com/1/789/789.jpg",
-            "Title": "明智少年之優雅犀利事件簿",
-            "LastUpdateInfo": "SPECIAL STORY 明智警视优雅的早晨情景（全新短篇）",
-            "LastPartShowName": "SPECIAL STORY 明智警视优雅的早晨情景（全新短篇）",
-            "Mid": 789,
-            "ReadUrl": "",
-            "BigPic": "http://mhfm9218us.cdndm5.com/1/789/789.jpg",
-            "Content": "他擁有華麗俊俏的外表和樣樣皆能的身手、更有著精密無比的頭腦。他是最完美的警察化身,他是金田一最討厭的對手,他是明智健悟。 《金田一少年之事件簿》裡頭最搶鏡的配角,比金田一毫不遜色的魅力。想要知道明智的成長與故事嗎？包...",
-            "TagList": [],
-            "LastPartUrl": "m9008",
-            "AuthorUrl": ["/search?title=%e4%bd%90%e8%97%a4%e6%96%87%e4%b9%9f&language=1&f=2"],
-            "LastPartTime": "2006-08-19",
-            "AddTime": "2006-08-19",
-            "Categorys": "侦探推理",
-            "Score": null,
-            "Status": "已完结"
-          }, {
-            "Id": 18097,
-            "Author": ["佐藤文也 天樹徵丸"],
-            "Url": "/manhua-jintianyixixueying/",
-            "Pic": "http://mhfm4218us.cdndm5.com/19/18097/20150414101503_180x240_29.jpg",
-            "Title": "金田一吸血櫻",
-            "LastUpdateInfo": "第4话",
-            "LastPartShowName": "第4话",
-            "Mid": 18097,
-            "ReadUrl": "",
-            "BigPic": "http://mhfm4218us.cdndm5.com/19/18097/20150414101503_180x240_29.jpg",
-            "Content": "少年偵探漫畫金田一吸血櫻",
-            "TagList": ["悬疑"],
-            "LastPartUrl": "m202975",
-            "AuthorUrl": ["/search?title=%e4%bd%90%e8%97%a4%e6%96%87%e4%b9%9f++%e5%a4%a9%e6%a0%91%e5%be%81%e4%b8%b8+&language=1&f=2"],
-            "LastPartTime": "2015-05-22",
-            "AddTime": "2015-04-14",
-            "Categorys": "少年热血",
-            "Score": null,
-            "Status": "连载中"
-          }] : this.searchComicsList;
-        }
       }
     });
   }
