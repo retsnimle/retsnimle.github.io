@@ -598,6 +598,7 @@
             return value[0] == id;
           });
           this.comment.Id = id;
+          this.comment.userName = selectComment[0][3];
           this.comment.stars = selectComment[0][2];
           this.comment.userComment = selectComment[0][4];
           $('#commentForm').collapse('show');
