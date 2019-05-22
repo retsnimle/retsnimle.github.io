@@ -231,6 +231,18 @@
     <!-- 主要顯示頁面在此 -->
     <div class="container" v-show="reloadOrNot">
       <div class='row'>
+        <div class="input-group mx-1 mt-1">
+          <select class="custom-select" v-model='sortBy'>
+            <option value="time">依照建立時間排序</option>
+            <option value="stars">依照平均星數排序</option>
+            <option value="comments">依照評論數量排序</option>
+          </select>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" @click="sortType = !sortType" id="button-addon2">{{sortShow}}</button>
+          </div>
+        </div>
+      </div>
+      <div class='row'>
         <comic-card-item @comic-detail-select='opencommentDetail($event)' v-for="(comic,index) in comicsListFilted" :comic="comic" :index="index" @tag-select="searchType='tag',searchText=$event" @user-select="searchType='user',searchText=$event">
         </comic-card-item>
       </div>
@@ -323,7 +335,7 @@
     Vue.component('comic-card-item', {
       props: ['comic', 'index'],
       template: `
-      <div class="col-md-6 col-lg-4 py-1 px-1">
+      <div class="col-md-6 col-lg-4 pt-1 px-1">
         <div class="card">
 
           <div class="card-body" @click="$emit('comic-detail-select', index)">
@@ -451,6 +463,10 @@
         nowAtComic: true,
         searchText: '',
         searchType: 'name',
+
+        sortBy: 'time',
+        sortType: true,
+
         userNameC: '',
         loading: false,
         dev: false,
@@ -856,23 +872,75 @@
             "AddTime": "2018-01-21"
           };
         },
+        sortShow: function() {
+          if (this.sortBy === 'time') {
+            return this.sortType ? '新到舊' : '舊到新';
+          } else {
+            return this.sortType ? '多到少' : '少到多';
+          }
+
+        },
         comicsListFilted: function() {
           var comicList = this.comicsList.slice(0);
-          comicList.reverse();
+
           var text = this.searchText.toLowerCase();
+          if (this.sortBy === 'time') {
+            if (this.sortType) comicList.reverse();
+          } else if (this.sortBy === 'stars') {
+            comicList.reverse();
+            if (this.sortType) {
+              comicList.sort(function(a, b) {
+                if (a[5] > b[5]) return -1;
+                else if (a[5] < b[5]) return 1;
+                else return 0;
+              });
+            } else if (!this.sortType) {
+              comicList.sort(function(a, b) {
+                if (a[5] > b[5]) return 1;
+                else if (a[5] < b[5]) return -1;
+                else return 0;
+              });
+            }
+          } else if (this.sortBy === 'comments') {
+            comicList.reverse();
+            if (this.sortType) {
+              comicList.sort(function(a, b) {
+                if (a[9] > b[9]) return -1;
+                else if (a[9] < b[9]) return 1;
+                else return 0;
+              });
+            } else if (!this.sortType) {
+              comicList.sort(function(a, b) {
+                if (a[9] > b[9]) return 1;
+                else if (a[9] < b[9]) return -1;
+                else return 0;
+              });
+            }
+          }
+
 
           if (!this.nowAtComic || text.length == 0) return comicList;
+          var dis = false;
+          if (text.match(/^-/) != null) {
+            dis = true;
+            text = text.replace(/^-/, '');
+          }
+
+
           if (this.searchType === 'name') {
             return comicList.filter(function(value) {
-              return (String(value[1]).toLowerCase().indexOf(text) != -1 || String(value[2]).toLowerCase().indexOf(text) != -1);
+              var tempBool = (String(value[1]).toLowerCase().indexOf(text) != -1 || String(value[2]).toLowerCase().indexOf(text) != -1);
+              return (dis ? !tempBool : tempBool);
             });
           } else if (this.searchType === 'user') {
             return comicList.filter(function(value) {
-              return String(value[3]).toLowerCase().indexOf(text) != -1;
+              var tempBool = String(value[3]).toLowerCase().indexOf(text) != -1;
+              return (dis ? !tempBool : tempBool);
             });
           } else if (this.searchType === 'tag') {
             return comicList.filter(function(value) {
-              return String(value[4]).toLowerCase().indexOf(text) != -1;
+              var tempBool = String(value[4]).toLowerCase().indexOf(text) != -1;
+              return (dis ? !tempBool : tempBool);
             });
           }
         },
