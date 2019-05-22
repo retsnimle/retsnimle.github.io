@@ -89,10 +89,12 @@
             <div class="form-group col-md-6">
               <label for="stars">推薦星數<span class="text-danger"><small>(必填)</small></span></label>
               <p>
+                <span @click='comment.stars = -10' id='start1' class='cursor_pointer' :class="parseInt(comment.stars)<0 ?'text-danger':''">{{parseInt(comment.stars)<0 ?'💀' :'💀'}}</span>
+
                 <span @click='comment.stars = 1' id='start1' class='cursor_pointer' :class="parseInt(comment.stars)>=1 ?'text-warning':''">{{parseInt(comment.stars)>=1 ?'★' :'☆'}}</span>
                 <span @click='comment.stars = 2' id='start2' class='cursor_pointer' :class="parseInt(comment.stars)>=2 ?'text-warning':''">{{parseInt(comment.stars)>=2 ?'★' :'☆'}}</span>
                 <span @click='comment.stars = 3' id='start3' class='cursor_pointer' :class="parseInt(comment.stars)>=3 ?'text-warning':''">{{parseInt(comment.stars)>=3 ?'★' :'☆'}}</span>
-                <span>{{(comment.stars == 1)?'（不錯看。）':''}}{{(comment.stars == 2)?'（超好看！）':''}}{{(comment.stars == 3)?'（人生必看！！）':''}}</span></p>
+                <span>{{(comment.stars < 0)?'（幹你娘雷暴）':''}}{{(comment.stars == 1)?'（不錯看。）':''}}{{(comment.stars == 2)?'（超好看！）':''}}{{(comment.stars == 3)?'（人生必看！！）':''}}</span></p>
               <!-- <input type="text" id="starsInput" v-model='comment.stars' value="0" style="display:none"  {{true?★:☆}}> -->
             </div>
           </div>
@@ -100,12 +102,12 @@
             <label for="tags">標籤<span class="text-danger"><small>(必填)</small></span></label>
             <input type="text" name="tags" id="tags">
             <p>熱門標籤：
-              <button type="button" class="btn btn-info btn-sm mr-1 mt-1" v-for="tag in tagsShow" @click="addTag(tag[0])">
+              <button type="button" class="btn btn-sm mr-1 mt-1" :class="parseInt(tag[1]) > 5 ? 'btn-warning' :   (parseInt(tag[1]) > 1 ? 'btn-info' : 'btn-secondary')" v-for="tag in tagsShow" @click="addTag(tag[0])">
                 {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
               </button>
               <small class="text-muted cursor_pointer" v-show="!comment.tagsShowMoreOrNot" @click='comment.tagsShowMoreOrNot = true'>展開全部…</small>
 
-              <button type="button" class="btn btn-info btn-sm mr-1 mt-1" v-show="comment.tagsShowMoreOrNot" v-for="tag in tagsHide" @click="addTag(tag[0])">
+              <button type="button" class="btn btn-sm mr-1 mt-1" :class="parseInt(tag[1]) > 5 ? 'btn-warning' :   (parseInt(tag[1]) > 1 ? 'btn-info' : 'btn-secondary')" v-show="comment.tagsShowMoreOrNot" v-for="tag in tagsHide" @click="addTag(tag[0])">
                 {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
               </button>
 
@@ -148,8 +150,15 @@
             <div class="media-body">
               <h5 class="mt-0">{{selectCommentData.Title}}</h5>
               <p>{{selectCommentData.Author}} <a :href="'https://www.manhuaren.com' + selectCommentData.Url" target="_blank">漫畫人連結</a></p>
-              <p class="card-subtitle mb-2 text-muted">推薦人：<span class="cursor_pointer" @click="userNameC = selectCommentData.userName,searchText=userNameC,searchType='user',closeCommentM()">{{selectCommentData.userName}}</span> <span class='text-warning'
-                  v-for="n in parseInt(selectCommentData.stars)">★</span><span v-for="n in 3-parseInt(selectCommentData.stars)">☆</span></p>
+              <p class="card-subtitle mb-2 text-muted">推薦人：<span class="cursor_pointer" @click="userNameC = selectCommentData.userName,searchText=userNameC,searchType='user',closeCommentM()">{{selectCommentData.userName}}</span>
+
+                <template v-if="selectCommentData.stars > 0">
+                  <span class='text-warning' v-for="n in Math.round(selectCommentData.stars)">★</span>
+                  <span v-for="n in 3-Math.round(selectCommentData.stars)">☆</span>
+                </template>
+                <span v-else class='text-danger'>💀💀💀</span>
+
+              </p>
               <!-- <p></p> -->
               <span class="cursor_pointer badge badge-secondary text-white mr-1 mt-1" @click="searchType='tag',searchText=tag,closeCommentM()" v-for="tag in selectCommentData.tags.split(',')">{{tag}}</span>
             </div>
@@ -179,10 +188,12 @@
               <div class="form-group col-md-6">
                 <label for="stars">推薦星數</label>
                 <p>
+                  <span @click='comment.stars = -10' id='start1' class='cursor_pointer' :class="parseInt(comment.stars)<0 ?'text-danger':''">{{parseInt(comment.stars)<0 ?'💀' :'💀'}}</span>
+
                   <span @click='comment.stars = 1' id='start1' class='cursor_pointer' :class="parseInt(comment.stars)>=1 ?'text-warning':''">{{parseInt(comment.stars)>=1 ?'★' :'☆'}}</span>
                   <span @click='comment.stars = 2' id='start2' class='cursor_pointer' :class="parseInt(comment.stars)>=2 ?'text-warning':''">{{parseInt(comment.stars)>=2 ?'★' :'☆'}}</span>
                   <span @click='comment.stars = 3' id='start3' class='cursor_pointer' :class="parseInt(comment.stars)>=3 ?'text-warning':''">{{parseInt(comment.stars)>=3 ?'★' :'☆'}}</span>
-                  <span>{{(comment.stars == 1)?'（不錯看。）':''}}{{(comment.stars == 2)?'（超好看！）':''}}{{(comment.stars == 3)?'（人生必看！！）':''}}</span></p>
+                  <span>{{(comment.stars < 0)?'（幹你娘雷暴）':''}}{{(comment.stars == 1)?'（不錯看。）':''}}{{(comment.stars == 2)?'（超好看！）':''}}{{(comment.stars == 3)?'（人生必看！！）':''}}</span></p>
 
               </div>
             </div>
@@ -190,12 +201,12 @@
               <label for="tags">新增/刪除標籤<span class="text-danger"><small>(不想更改就不動就好)</small></span></label>
               <input type="text" name="tags" id="tagscomment">
               <p>熱門標籤：
-                <button type="button" class="btn btn-info btn-sm mr-1 mt-1" v-for="tag in tagsShow" @click="addTagcomment(tag[0])">
+                <button type="button" class="btn btn-sm mr-1 mt-1" :class="parseInt(tag[1]) > 5 ? 'btn-warning' :   (parseInt(tag[1]) > 1 ? 'btn-info' : 'btn-secondary')" v-for="tag in tagsShow" @click="addTagcomment(tag[0])">
                   {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
                 </button>
                 <small class="text-muted cursor_pointer" v-show="!comment.tagsShowMoreOrNot" @click='comment.tagsShowMoreOrNot = true'>展開全部…</small>
 
-                <button type="button" class="btn btn-info btn-sm mr-1 mt-1" v-show="comment.tagsShowMoreOrNot" v-for="tag in tagsHide" @click="addTagcomment(tag[0])">
+                <button type="button" class="btn btn-sm mr-1 mt-1" :class="parseInt(tag[1]) > 5 ? 'btn-warning' :   (parseInt(tag[1]) > 1 ? 'btn-info' : 'btn-secondary')" v-show="comment.tagsShowMoreOrNot" v-for="tag in tagsHide" @click="addTagcomment(tag[0])">
                   {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
                 </button>
 
@@ -336,23 +347,29 @@
       props: ['comic', 'index'],
       template: `
       <div class="col-md-6 col-lg-4 pt-1 px-1">
-        <div class="card">
+        <div class="card" :class="comic[5] > 0 ? '':'bg-warning'">
 
           <div class="card-body" @click="$emit('comic-detail-select', index)">
 
             <div class="media">
               <img class="col-5" :src="comic[6]" alt="Generic placeholder image">
               <div class="media-body col-7">
-                <h6 class="card-title">{{comic[1]}}</h6>
-                <p class="card-subtitle mb-2 text-muted">推薦人：{{comic[3]}}</p>
-                <span class='text-warning' v-for="n in Math.round(comic[5])">★</span><span v-for="n in 3-Math.round(comic[5])">☆</span><span>({{comic[5]}})</span>
-                <p>{{comic[9]}}則評論。</p>
+                <h6 class="card-title" :class="comic[5] > 0 ? '':'text-danger'">{{comic[1]}}</h6>
+                <p class="card-subtitle mb-2 text-muted" >推薦人：{{comic[3]}}</p>
+                <template v-if="comic[5] > 0">
+                  <span class='text-warning' v-for="n in Math.round(comic[5])">★</span>
+                  <span v-for="n in 3-Math.round(comic[5])">☆</span><span>({{comic[5]}})</span>
+                </template>
+                <span v-else class="text-danger">💀💀💀</span>
+
+                <p :class="comic[5] > 0 ? '':'text-black'">{{comic[9]}}則評論。</p>
               </div>
             </div>
 
           </div>
           <div class="card-footer">
-            <a class="cursor_pointer badge badge-secondary text-white mr-1 mt-1"
+            <a class="cursor_pointer badge text-white mr-1 mt-1"
+            :class="comic[5] > 0 ? 'badge-secondary':'badge-danger'"
             @click="$emit('tag-select', tag)"
             v-for="tag in comic[4].split(',')" >{{tag}}</a>
           </div>
@@ -395,7 +412,15 @@
         <div class="d-flex">
         <span class="mr-auto"><strong>{{comment[3]}}</strong>
           <span v-show='comment[2] != 0'>
-            (<span class='text-warning' v-for="n in parseInt(comment[2])">★</span><span v-for="n in 3-parseInt(comment[2])">☆</span>)
+
+            (
+              <template v-if="comment[2] > 0">
+                <span class='text-warning' v-for="n in Math.round(comment[2])">★</span>
+                <span v-for="n in 3-Math.round(comment[2])">☆</span>
+              </template>
+              <span v-else class='text-danger'>💀💀💀</span>
+
+          )
           </span>
           ：
         </span>
@@ -438,7 +463,7 @@
     Vue.component('searchcomic-card-item', {
       props: ['comic', 'index'],
       template: `
-      <div class="col-6 col-sm-4 col-md-3 pb-3">
+      <div class="col-6 col-sm-4 col-md-3 pt-1">
         <div class="card text-center" style="//width: 18rem;" @click="$emit('search-select', index)">
           <img class="card-img-top" :src="comic.BigPic">
           <div class="card-body">
