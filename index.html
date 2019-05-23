@@ -3,7 +3,7 @@
 <head>
   <title>湯群漫畫推薦網
   </title>
-  <link rel="stylesheet" type="text/css" href="jquery.tagsinput.css" />
+
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Noto+Sans+TC|Noto+Serif+TC" rel="stylesheet">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
@@ -14,8 +14,10 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
-  <script src="jquery.tagsinput.js"></script>
-
+  <!-- <script src="jquery.tagsinput.js"></script>
+  <link rel="stylesheet" type="text/css" href="jquery.tagsinput.css" /> -->
+  <script src="jquery.tagsinput-revisited.js"></script>
+  <link rel="stylesheet" type="text/css" href="jquery.tagsinput-revisited.css">
 
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -537,7 +539,12 @@
           this.searchComicData.select = num;
           if (this.searchComicData.tagsOn === false) {
             $('#tags').tagsInput({
-              'width': 'auto',
+              'unique': true,
+              autocomplete: {
+                'source': this.tags.map(function(value) {
+                  return value[0];
+                })
+              }
             });
             this.searchComicData.tagsOn = true;
           }
@@ -549,16 +556,24 @@
 
         opencommentDetail: function(num) {
           this.commentComicData.select = num;
-          if (this.commentComicData.tagsOn === false) {
-            $('#tagscomment').tagsInput({
-              'width': 'auto',
-            });
-            this.commentComicData.tagsOn = true;
-          }
+
+          $('#comiccommentModal').modal('show');
+
           this.commentComicData.type = 'addComment';
           this.comment.stars = 0;
           this.comment.userComment = '';
           $('#commentForm').collapse('hide');
+          if (this.commentComicData.tagsOn === false) {
+            $('#tagscomment').tagsInput({
+              'unique': true,
+              autocomplete: {
+                'source': this.tags.map(function(value) {
+                  return value[0];
+                })
+              }
+            });
+            this.commentComicData.tagsOn = true;
+          }
 
           $('#tagscomment').importTags(this.selectCommentData.tags);
           this.comment.warning = '';
@@ -566,7 +581,7 @@
           this.commentComicData.fType = 'Id';
           this.commentComicData.ft = this.selectCommentData.Id;
           //console.log(this.commentComicData);
-          $('#comiccommentModal').modal('show');
+
         },
 
         // TAG相關
