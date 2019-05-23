@@ -429,7 +429,7 @@
           <a class="badge badge-danger text-white cursor_pointer" @click="deleteComment()">刪除</a>
         </span>
         </div>
-        {{select?'已選擇此評論，請向下捲動到最底':comment[4]}}
+        <span style="white-space: pre-wrap;">{{select?'已選擇此評論，請向下捲動到最底':comment[4]}}</span>
 
 
       </li>
