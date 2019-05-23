@@ -284,13 +284,13 @@
         </div>
       </div>
       <div class='row'>
-        <comic-card-item @comic-detail-select='opencommentDetail($event)' v-for="(comic,index) in comicsListFilted" :comic="comic" :index="index" @tag-select="searchType='tag',searchText=$event" @user-select="searchType='user',searchText=$event">
+        <comic-card-item @comic-detail-select='opencommentDetail($event)' v-for="(comic,index) in comicsListFilted" :comic="comic" :index="index" :full-width="fullWidth" @tag-select="searchType='tag',searchText=$event" @user-select="searchType='user',searchText=$event">
         </comic-card-item>
       </div>
     </div>
 
     <div class="container" v-show="!nowAtComic">
-      <p v-show="searchComicsList.length === 0 && !loading"> (請於搜尋框內輸入欲新增的漫畫關鍵字) </p>
+      <p v-show="(searchComicsList.length === 0 && !loading) || searchError" :class="searchError?'text-danger':''"> {{searchError?'※燈愣，壓力測試沒過。Google免費伺服超過使用上限了，看看之後會不會好※':'(請於搜尋框內輸入欲新增的漫畫關鍵字)'}} </p>
       <div class='row'>
         <searchcomic-card-item @search-select='openSearchDetail($event)' v-for="(comic,index) in searchComicsList" :comic="comic" :index="index">
         </searchcomic-card-item>
@@ -374,37 +374,51 @@
 
 
     Vue.component('comic-card-item', {
-      props: ['comic', 'index'],
+      props: ['comic', 'index', 'fullWidth'],
+
       template: `
-      <div class="col-md-6 col-lg-4 pt-1 px-1">
+      <div :class=" fullWidth > 576 ? 'col-md-6 col-lg-4 pt-1 px-1' : 'col-6 col-md-4 col-lg-3 pt-1 px-1' ">
         <div class="card" :class="comic[5] > 0 ? '':'bg-warning'">
 
-          <div class="card-body" @click="$emit('comic-detail-select', index)">
+          <div v-if="fullWidth > 576" class="card-body" @click="$emit('comic-detail-select', index)">
 
             <div class="media">
               <img class="col-5" :src="comic[6]" alt="Generic placeholder image">
               <div class="media-body col-7">
                 <h6 class="card-title" :class="comic[5] > 0 ? '':'text-danger'">{{comic[1]}}</h6>
-                <p class="card-subtitle mb-2 text-muted" >推薦人：{{comic[3]}}</p>
+                <p class="card-subtitle mb-2 text-muted">推薦人：{{comic[3]}}</p>
                 <template v-if="comic[5] > 0">
                   <span class='text-warning' v-for="n in Math.round(comic[5])">★</span>
                   <span v-for="n in 3-Math.round(comic[5])">☆</span><span>({{comic[5]}})</span>
                 </template>
                 <span v-else class="text-danger">💀💀💀</span>
-
                 <p :class="comic[5] > 0 ? '':'text-black'">{{comic[9]}}則評論。</p>
               </div>
             </div>
-
-          </div>
-          <div class="card-footer">
-            <a class="cursor_pointer badge text-white mr-1 mt-1"
-            :class="comic[5] > 0 ? 'badge-secondary':'badge-danger'"
-            @click="$emit('tag-select', tag)"
-            v-for="tag in comic[4].split(',')" >{{tag}}</a>
           </div>
 
+          <div v-else class="card-body p-2" @click="$emit('comic-detail-select', index)">
 
+            <img class="col px-1" :src="comic[6]" alt="Generic placeholder image" style="height : 192 px">
+
+            <h6 class="card-title mt-1" :class="comic[5] > 0 ? '':'text-danger'">{{comic[1]}}</h6>
+            <p class="card-subtitle mb-2 text-muted">推薦人：{{comic[3]}}</p>
+            <div class="d-flex">
+              <template v-if="comic[5] > 0">
+                <span class='text-warning' v-for="n in Math.round(comic[5])">★</span>
+                <span v-for="n in 3-Math.round(comic[5])">☆</span><span class="mr-auto">({{comic[5]}})</span>
+              </template>
+              <span v-else class="text-danger mr-auto">💀💀💀</span>
+
+              <span class="mb-1" :class="comic[5] > 0 ? 'text-primary':''">💬</span><span>({{comic[9]}})</span>
+            </div>
+          </div>
+
+
+
+          <div class="card-footer" :class=" fullWidth > 576 ? '' : 'p-2'">
+            <a class="cursor_pointer badge text-white mr-1 mt-1" :class="comic[5] > 0 ? 'badge-secondary':'badge-danger'" @click="$emit('tag-select', tag)" v-for="tag in comic[4].split(',')">{{tag}}</a>
+          </div>
         </div>
       </div>
       `
@@ -519,6 +533,8 @@
         searchText: '',
         searchType: 'name',
 
+        searchError: false,
+
         sortBy: 'time',
         sortType: true,
 
@@ -558,6 +574,14 @@
         comments: [],
         tags: [],
         showOrNot: false
+      },
+      mounted() {
+        this.fullWidth = window.innerWidth;
+        //this.fullHeight = window.innerHeight;
+        window.onresize = () => {
+          this.fullWidth = window.innerWidth;
+          //this.fullHeight = window.innerHeight;
+        };
       },
       created() {
 
@@ -635,6 +659,7 @@
             //console.log(this.tags);
           }, function() {
             console.log('請求失敗處理');
+            this.loading = false;
           });
         },
 
@@ -657,6 +682,7 @@
             this.loading = false;
           }, function() {
             console.log('請求失敗處理');
+            this.loading = false;
           });
         },
         closeComment: function() {
@@ -735,6 +761,8 @@
 
           }, function() {
             console.log('請求失敗處理');
+            this.loading = false;
+            this.searchError = true;
           });
         },
 
@@ -842,6 +870,8 @@
               }
             }, function() {
               console.log('請求失敗處理');
+              this.loading = false;
+              this.comment.warning = '出現不明錯誤，建議通知阿歐西。';
             });
           }
 
