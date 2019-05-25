@@ -375,7 +375,14 @@
 
     Vue.component('comic-card-item', {
       props: ['comic', 'index', 'fullWidth'],
-
+      computed: {
+        isNew: function() {
+          var now = new Date();
+          var postTime = new Date(this.comic[8]);
+          if (parseInt(now - postTime) / 3600000 < 24) return true;
+          else return false;
+        }
+      },
       template: `
       <div :class=" fullWidth > 576 ? 'col-md-6 col-lg-4 pt-1 px-1' : 'col-6 col-md-4 col-lg-3 pt-1 px-1' ">
         <div class="card" :class="comic[5] > 0 ? '':'bg-warning'">
@@ -385,7 +392,9 @@
             <div class="media">
               <img class="col-5" :src="comic[6]" alt="Generic placeholder image">
               <div class="media-body col-7">
-                <h6 class="card-title" :class="comic[5] > 0 ? '':'text-danger'">{{comic[1]}}</h6>
+                <h6 class="card-title" :class="comic[5] > 0 ? '':'text-danger'">{{comic[1]}}
+                <span class="badge badge-danger" v-if="isNew">NEW</span>
+                </h6>
                 <p class="card-subtitle mb-2 text-muted">推薦人：{{comic[3]}}</p>
                 <template v-if="comic[5] > 0">
                   <span class='text-warning' v-for="n in Math.round(comic[5])">★</span>
@@ -401,7 +410,9 @@
 
             <img class="col px-1" :src="comic[6]" alt="Generic placeholder image" style="height : 192 px">
 
-            <h6 class="card-title mt-1" :class="comic[5] > 0 ? '':'text-danger'">{{comic[1]}}</h6>
+            <h6 class="card-title mt-1" :class="comic[5] > 0 ? '':'text-danger'">{{comic[1]}}
+            <span class="badge badge-danger" v-if="isNew">NEW</span>
+            </h6>
             <p class="card-subtitle mb-2 text-muted">推薦人：{{comic[3]}}</p>
             <div class="d-flex">
               <template v-if="comic[5] > 0">
