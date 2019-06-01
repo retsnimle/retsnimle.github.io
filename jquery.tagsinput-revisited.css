@@ -93,6 +93,17 @@
 	border: 0 none;
 	margin: 0 5px 5px 0;
 }
+.tagsinput div textarea {
+	background: transparent;
+	display: block;
+	width: 100%;
+	font-size: 14px;
+	line-height: 20px;
+	padding: 5px;
+	border: 0 none;
+	margin: 0 5px 5px 0;
+	resize : none;
+}
 
 .tagsinput div input.error {
 	color: #ff6b6b;

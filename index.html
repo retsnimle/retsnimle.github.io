@@ -130,8 +130,7 @@
           </div>
           <div class="form-group">
             <label for="tags">標籤<span class="text-danger"><small>(必填)</small></span></label>
-            <!-- <input type="text" name="tags" id="tags"> -->
-            <textarea class="form-control" rows="3" name="tags" id="tags"></textarea>
+            <input type="text" name="tags" id="tags">
             <p>熱門標籤：
               <button type="button" class="btn btn-sm mr-1 mt-1" :class="parseInt(tag[1]) > 5 ? 'btn-warning' :   (parseInt(tag[1]) > 1 ? 'btn-info' : 'btn-secondary')" v-for="tag in tagsShow" @click="addTag(tag[0])">
                 {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
@@ -230,9 +229,8 @@
             </div>
             <div class="form-group" v-show="commentComicData.type != 'delete'">
               <label for="tags">新增/刪除標籤<span class="text-danger"><small>(不想更改就不動就好)</small></span></label>
-              <!-- <input type="text" name="tags" id="tagscomment"> -->
+              <input type="text" name="tags" id="tagscomment">
 
-              <textarea class="form-control" rows="3" name="tags" id="tagscomment"></textarea>
               <p>熱門標籤：
                 <button type="button" class="btn btn-sm mr-1 mt-1" :class="parseInt(tag[1]) > 5 ? 'btn-warning' :   (parseInt(tag[1]) > 1 ? 'btn-info' : 'btn-secondary')" v-for="tag in tagsShow" @click="addTagcomment(tag[0])">
                   {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
