@@ -76,10 +76,11 @@
     :now-at-comic='nowAtComic'
     :loading='loading'
     :dev='dev'
-    @now-at-comic-false='nowAtComic = false'
-    @now-at-comic-true='nowAtComic = true'
+    @now-at-comic-3='nowAtComic = 3'
+    @now-at-comic-2='nowAtComic = 2'
+    @now-at-comic-1='nowAtComic = 1'
     @dev = 'dev = !dev'
-    @clear-text = "searchText.length != 0 ? searchText = '' : search('reload')"
+    @clear-text = "searchText.length != 0 ? searchText = '' : search('reload'),getTags(),getComments()"
     @get-search='search'
     :value-input="searchText"
     @text-input="searchText = $event"
@@ -290,13 +291,20 @@
       </div>
     </div>
 
-    <div class="container" v-show="!nowAtComic">
+    <div class="container" v-show="nowAtComic == 2">
       <p v-show="(searchComicsList.length === 0 && !loading) || searchError" :class="searchError?'text-danger':''"> {{searchError?'※燈愣，壓力測試沒過。Google免費伺服超過使用上限了，看看之後會不會好※':'(請於搜尋框內輸入欲新增的漫畫關鍵字)'}} </p>
       <div class='row'>
         <searchcomic-card-item @search-select='openSearchDetail($event)' v-for="(comic,index) in searchComicsList" :comic="comic" :index="index">
         </searchcomic-card-item>
       </div>
       <button class="btn col-md-12 pt-2" v-show="searchComicsList.length != 0" @click="search()" :disabled="loading">{{loading?'讀取中……':'載入更多'}}</button>
+    </div>
+
+    <div class="container" v-show="nowAtComic == 3">
+      <div class='row'>
+        <comment-card-item @comic-detail-select='opencommentDetail($event)' v-for="(comment,index) in commentsR" :comment="comment" :index="index" :comics-list="comicsList" :full-width="fullWidth">
+        </comment-card-item>
+      </div>
     </div>
 
   </div>
@@ -340,11 +348,14 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
           <ul class="navbar-nav mr-auto">
-            <li class="nav-item cursor_pointer" :class="[ nowAtComic? 'active': '' ]">
-              <a class="nav-link cursor_pointer" @click="$emit('now-at-comic-true')">漫畫一覽 <span class="sr-only">(current)</span></a>
+            <li class="nav-item cursor_pointer" :class="[ nowAtComic == 1? 'active': '' ]">
+              <a class="nav-link cursor_pointer" @click="$emit('now-at-comic-1')">漫畫一覽 <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item cursor_pointer" :class="[ !nowAtComic? 'active': '' ]">
-              <a class="nav-link cursor_pointer" @click="$emit('now-at-comic-false')">新增漫畫</a>
+            <li class="nav-item cursor_pointer" :class="[ nowAtComic == 3? 'active': '' ]">
+              <a class="nav-link cursor_pointer" @click="$emit('now-at-comic-3')">評論一覽</a>
+            </li>
+            <li class="nav-item cursor_pointer" :class="[ nowAtComic == 2? 'active': '' ]">
+              <a class="nav-link cursor_pointer" @click="$emit('now-at-comic-2')">新增漫畫</a>
             </li>
 
           </ul>
@@ -354,7 +365,7 @@
           <form class="form-inline my-2 my-lg-0" @submit.prevent>
             <div class="input-group">
 
-                <select v-show="nowAtComic" class="custom-select col-4" :value="valueSelect" @input="$emit('select-change', $event.target.value)">
+                <select v-show="nowAtComic == 1" class="custom-select col-4" :value="valueSelect" @input="$emit('select-change', $event.target.value)">
                   <option value="name">漫畫名稱</option>
                   <option value="user">推薦人</option>
                   <option value="tag">標籤</option>
@@ -430,6 +441,67 @@
 
           <div class="card-footer" :class=" fullWidth > 576 ? '' : 'p-2'">
             <a class="cursor_pointer badge text-white mr-1 mt-1" :class="comic[5] > 0 ? 'badge-secondary':'badge-danger'" @click="$emit('tag-select', tag)" v-for="tag in comic[4].split(',')">{{tag}}</a>
+          </div>
+        </div>
+      </div>
+      `
+    });
+
+    Vue.component('comment-card-item', {
+      props: ['comment', 'index', 'comicsList', 'fullWidth'],
+      computed: {
+        comic: function() {
+          var comicId = this.comment[1];
+          if (this.comicsList.length == 0) {
+            return {
+              "Id": 40420,
+              "Author": "天",
+              "Url": "/manhua/",
+              "Title": "金田一",
+              "stars": 1,
+              "BigPic": "http://mhfm6218us.cdndm5.com/41/40420/20181011103128_180x240_24.jpg",
+              "Pic": "http://mhfm6218us.cdndm5.com/7/6213/20160906153542_320x246_36.jpg",
+              "userName": "全新的“金田一”",
+              "tags": "悬疑",
+              "LastPartTime": "2019-05-10",
+              "AddTime": "2018-01-21"
+            };
+          }
+          return this.comicsList.find(function(value) {
+            return value[0] == comicId;
+          });
+        },
+        comicNum: function() {
+          var comicId = this.comment[1];
+          if (this.comicsList.length == 0) {
+            return 0;
+          }
+          var commentArr = this.comicsList.slice(0);
+          var commentArr = commentArr.reverse();
+          return commentArr.findIndex(function(value, index) {
+            return value[0] == comicId;
+          });
+        },
+      },
+      template: `
+      <div :class=" fullWidth > 576 ? 'col-md-6 col-lg-4 pt-1 px-1' : 'col-12 pt-1 px-1' ">
+        <div class="card" :class="comment[2] > 0 ? '':'bg-warning'">
+
+          <div class="card-body" @click="$emit('comic-detail-select', comicNum)">
+            <div class="media">
+              <img class="" :src="comic[6]" style="max-height:86px;" alt="Generic placeholder image">
+              <div class="media-body col-10">
+                <h6 class="card-title" :class="comment[2] > 0 ? '':'text-danger'">{{comment[3]}}
+                </h6>
+                <p class="card-subtitle text-muted">{{comic[1]}}</p>
+                <template v-if="comment[2] > 0">
+                  <span class='text-warning' v-for="n in Math.round(comment[2])">★</span>
+                  <span v-for="n in 3-Math.round(comment[2])">☆</span><span>({{comment[2]}})</span>
+                </template>
+                <span v-else class="text-danger">💀💀💀</span>
+              </div>
+            </div>
+            <span :class="comment[2] > 0 ? '':'text-black'">{{comment[4]}}</span>
           </div>
         </div>
       </div>
@@ -541,7 +613,7 @@
     var vm = new Vue({
       el: '#mainBody',
       data: {
-        nowAtComic: true,
+        nowAtComic: 1,
         searchText: '',
         searchType: 'name',
 
@@ -738,7 +810,7 @@
             var getBody = {
               type: 'comicList'
             };
-          } else if (!this.nowAtComic) {
+          } else if (this.nowAtComic == 2) {
             if (this.searchComicData.comicName !== this.searchText) {
               this.searchComicData.comicName = this.searchText;
               this.searchComicData.loadPage = 1;
@@ -762,7 +834,7 @@
           then(function(res) {
             //console.log(res);
             this.ajaxData = res.body;
-            if (this.nowAtComic || type == 'reload') {
+            if (this.nowAtComic == 1 || type == 'reload') {
               this.comicsList = this.ajaxData;
             } else {
               this.searchComicsList = this.searchComicsList.concat(this.ajaxData);
@@ -891,7 +963,10 @@
         }
       },
       computed: {
-
+        commentsR: function() {
+          var commentArr = this.comments.slice(0);
+          return commentArr.reverse();
+        },
         tagsShow: function() {
           var tempArr = this.tags.slice(0);
           tempArr.splice(15);
@@ -903,7 +978,7 @@
         },
 
         reloadOrNot: function() {
-          if (this.nowAtComic) {
+          if (this.nowAtComic == 1) {
             this.search('reload');
             this.getComments();
             this.getTags();
@@ -1036,7 +1111,7 @@
           }
 
 
-          if (!this.nowAtComic || text.length == 0) return comicList;
+          if (this.nowAtComic == 2 || text.length == 0) return comicList;
           var dis = false;
           if (text.match(/^-/) != null) {
             dis = true;
