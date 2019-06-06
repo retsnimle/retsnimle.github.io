@@ -492,6 +492,7 @@
               <img class="" :src="comic[6]" style="max-height:86px;" alt="Generic placeholder image">
               <div class="media-body col-10">
                 <h6 class="card-title" :class="comment[2] >= 0 ? '':'text-danger'">{{comment[3]}}
+                <span class="badge badge-danger" v-if="comment[3] == comic[3]">推薦人</span>
                 </h6>
                 <p class="card-subtitle text-muted">{{comic[1]}}</p>
 
