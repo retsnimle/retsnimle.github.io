@@ -4,14 +4,20 @@
   <title>湯群漫畫推薦網
   </title>
 
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+    integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Noto+Sans+TC|Noto+Serif+TC" rel="stylesheet">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+    integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
   <!-- <script src="jquery.tagsinput.js"></script>
@@ -21,10 +27,12 @@
 
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <script src="https://unpkg.com/vue-lazyload/vue-lazyload.js"></script>
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script>Vue.use(VueLazyload)</script>
 
   <style media="screen">
     body {
@@ -33,38 +41,38 @@
 
     }
 
-    .cursor_pointer{
-        cursor:pointer;
+    .cursor_pointer {
+      cursor: pointer;
     }
 
     .ui-autocomplete {
-  position: absolute;
-  z-index: 99999 !important;
-  cursor: default;
-  padding: 0;
-  margin-top: 2px;
-  list-style: none;
-  background-color: #ffffff;
-  border: 1px solid #ccc -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-}
+      position: absolute;
+      z-index: 99999 !important;
+      cursor: default;
+      padding: 0;
+      margin-top: 2px;
+      list-style: none;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+      -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    }
 
-.ui-autocomplete>li {
-  padding: 3px 20px;
-}
+    .ui-autocomplete>li {
+      padding: 3px 20px;
+    }
 
-.ui-autocomplete>li.ui-state-focus {
-  background-color: #DDD;
-}
+    .ui-autocomplete>li.ui-state-focus {
+      background-color: #DDD;
+    }
 
-.ui-helper-hidden-accessible {
-  display: none;
-}
-
+    .ui-helper-hidden-accessible {
+      display: none;
+    }
   </style>
 
 </head>
@@ -72,25 +80,15 @@
 <body>
   <!-- 導覽列 -->
   <div id="mainBody">
-    <navbar-item
-    :now-at-comic='nowAtComic'
-    :loading='loading'
-    :dev='dev'
-    @now-at-comic-3='nowAtComic = 3'
-    @now-at-comic-2='nowAtComic = 2'
-    @now-at-comic-1='nowAtComic = 1'
-    @dev = 'dev = !dev'
-    @clear-text = "searchText.length != 0 ? searchText = '' : search('reload'),getTags(),getComments()"
-    @get-search='search'
-    :value-input="searchText"
-    @text-input="searchText = $event"
-
-    :value-select="searchType"
-    @select-change="searchType = $event"
-    ></navbar-item>
+    <navbar-item :now-at-comic='nowAtComic' :loading='loading' :dev='dev' @now-at-comic-3='nowAtComic = 3'
+      @now-at-comic-2='nowAtComic = 2' @now-at-comic-1='nowAtComic = 1' @dev='dev = !dev'
+      @clear-text="searchText.length != 0 ? searchText = '' : search('reload'),getTags(),getComments()"
+      @get-search='search' :value-input="searchText" @text-input="searchText = $event" :value-select="searchType"
+      @select-change="searchType = $event"></navbar-item>
 
     <!-- 搜尋Modal -->
-    <div class="modal fade" id="comicDetailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="comicDetailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
       <modal-item>
         <div class="modal-body" id='comicDetail'>
 
@@ -120,12 +118,21 @@
             <div class="form-group col-md-6">
               <label for="stars">推薦星數<span class="text-danger"><small>(必填)</small></span></label>
               <p>
-                <span @click='comment.stars = -10' id='start1' class='cursor_pointer' :class="parseInt(comment.stars)<0 ?'text-danger':''">{{parseInt(comment.stars)<0 ?'💀' :'💀'}}</span>
+                <span @click='comment.stars = -10' id='start1' class='cursor_pointer'
+                  :class="parseInt(comment.stars)<0 ?'text-danger':''">{{parseInt(comment.stars)<0 ?'💀' :'💀'}}</span>
 
-                <span @click='comment.stars = 1' id='start1' class='cursor_pointer' :class="parseInt(comment.stars)>=1 ?'text-warning':''">{{parseInt(comment.stars)>=1 ?'★' :'☆'}}</span>
-                <span @click='comment.stars = 2' id='start2' class='cursor_pointer' :class="parseInt(comment.stars)>=2 ?'text-warning':''">{{parseInt(comment.stars)>=2 ?'★' :'☆'}}</span>
-                <span @click='comment.stars = 3' id='start3' class='cursor_pointer' :class="parseInt(comment.stars)>=3 ?'text-warning':''">{{parseInt(comment.stars)>=3 ?'★' :'☆'}}</span>
-                <span>{{(comment.stars < 0)?'（幹你娘雷暴）':''}}{{(comment.stars == 1)?'（不錯看。）':''}}{{(comment.stars == 2)?'（超好看！）':''}}{{(comment.stars == 3)?'（人生必看！！）':''}}</span></p>
+                    <span @click='comment.stars = 1' id='start1' class='cursor_pointer'
+                      :class="parseInt(comment.stars)>=1 ?'text-warning':''">{{parseInt(comment.stars)>=1 ?'★'
+                      :'☆'}}</span>
+                    <span @click='comment.stars = 2' id='start2' class='cursor_pointer'
+                      :class="parseInt(comment.stars)>=2 ?'text-warning':''">{{parseInt(comment.stars)>=2 ?'★'
+                      :'☆'}}</span>
+                    <span @click='comment.stars = 3' id='start3' class='cursor_pointer'
+                      :class="parseInt(comment.stars)>=3 ?'text-warning':''">{{parseInt(comment.stars)>=3 ?'★'
+                      :'☆'}}</span>
+                    <span>{{(comment.stars <
+                        0)?'（幹你娘雷暴）':''}}{{(comment.stars==1)?'（不錯看。）':''}}{{(comment.stars==2)?'（超好看！）':''}}{{(comment.stars==3)?'（人生必看！！）':''}}</span>
+              </p>
               <!-- <input type="text" id="starsInput" v-model='comment.stars' value="0" style="display:none"  {{true?★:☆}}> -->
             </div>
           </div>
@@ -133,12 +140,17 @@
             <label for="tags">標籤<span class="text-danger"><small>(必填)</small></span></label>
             <input type="text" name="tags" id="tags">
             <p>熱門標籤：
-              <button type="button" class="btn btn-sm mr-1 mt-1" :class="parseInt(tag[1]) > 5 ? 'btn-warning' :   (parseInt(tag[1]) > 1 ? 'btn-info' : 'btn-secondary')" v-for="tag in tagsShow" @click="addTag(tag[0])">
+              <button type="button" class="btn btn-sm mr-1 mt-1"
+                :class="parseInt(tag[1]) > 5 ? 'btn-warning' :   (parseInt(tag[1]) > 1 ? 'btn-info' : 'btn-secondary')"
+                v-for="tag in tagsShow" @click="addTag(tag[0])">
                 {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
               </button>
-              <small class="text-muted cursor_pointer" v-show="!comment.tagsShowMoreOrNot" @click='comment.tagsShowMoreOrNot = true'>展開全部…</small>
+              <small class="text-muted cursor_pointer" v-show="!comment.tagsShowMoreOrNot"
+                @click='comment.tagsShowMoreOrNot = true'>展開全部…</small>
 
-              <button type="button" class="btn btn-sm mr-1 mt-1" :class="parseInt(tag[1]) > 5 ? 'btn-warning' :   (parseInt(tag[1]) > 1 ? 'btn-info' : 'btn-secondary')" v-show="comment.tagsShowMoreOrNot" v-for="tag in tagsHide" @click="addTag(tag[0])">
+              <button type="button" class="btn btn-sm mr-1 mt-1"
+                :class="parseInt(tag[1]) > 5 ? 'btn-warning' :   (parseInt(tag[1]) > 1 ? 'btn-info' : 'btn-secondary')"
+                v-show="comment.tagsShowMoreOrNot" v-for="tag in tagsHide" @click="addTag(tag[0])">
                 {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
               </button>
 
@@ -162,7 +174,8 @@
         <div class="modal-footer">
           <span class="text-danger">{{comment.warning}}</span>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-          <button type="button" class="btn" :class="[ loading? 'btn-secondary': 'btn-primary' ]" id="sendComment" @click="sendComment('addComic')" :disabled="loading">{{loading?'處理中……':'確定送出'}}</button>
+          <button type="button" class="btn" :class="[ loading? 'btn-secondary': 'btn-primary' ]" id="sendComment"
+            @click="sendComment('addComic')" :disabled="loading">{{loading?'處理中……':'確定送出'}}</button>
         </div>
 
       </modal-item>
@@ -172,7 +185,8 @@
 
 
     <!-- 評論Modal -->
-    <div class="modal fade" id="comiccommentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="comiccommentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
       <modal-item>
         <div class="modal-body" id='comicDetail'>
 
@@ -180,8 +194,10 @@
             <img class="col-4" :src="selectCommentData.BigPic" alt="Generic placeholder image">
             <div class="media-body">
               <h5 class="mt-0">{{selectCommentData.Title}}</h5>
-              <p>{{selectCommentData.Author}} <a :href="'https://www.manhuaren.com' + selectCommentData.Url" target="_blank">漫畫人連結</a></p>
-              <p class="card-subtitle mb-2 text-muted">推薦人：<span class="cursor_pointer" @click="userNameC = selectCommentData.userName,searchText=userNameC,searchType='user',closeCommentM()">{{selectCommentData.userName}}</span>
+              <p>{{selectCommentData.Author}} <a :href="selectCommentData.Url"
+                  target="_blank">漫畫連結</a></p>
+              <p class="card-subtitle mb-2 text-muted">推薦人：<span class="cursor_pointer"
+                  @click="userNameC = selectCommentData.userName,searchText=userNameC,searchType='user',closeCommentM()">{{selectCommentData.userName}}</span>
 
                 <template v-if="selectCommentData.stars > 0">
                   <span class='text-warning' v-for="n in Math.round(selectCommentData.stars)">★</span>
@@ -191,13 +207,18 @@
 
               </p>
               <!-- <p></p> -->
-              <span class="cursor_pointer badge badge-secondary text-white mr-1 mt-1" @click="searchType='tag',searchText=tag,closeCommentM()" v-for="tag in selectCommentData.tags.split(',')">{{tag}}</span>
+              <span class="cursor_pointer badge badge-secondary text-white mr-1 mt-1"
+                @click="searchType='tag',searchText=tag,closeCommentM()"
+                v-for="tag in selectCommentData.tags.split(',')">{{tag}}</span>
             </div>
           </div>
           <ul class="list-group mt-1">
-            <comment-item v-for="(comment,index) in commentFlited" :comment="comment" :index="index" :type="commentComicData.type" @change-comment='changeComment($event)' @delete-comment='deleteComment($event)'></comment-item>
+            <comment-item v-for="(comment,index) in commentFlited" :comment="comment" :index="index"
+              :type="commentComicData.type" @change-comment='changeComment($event)'
+              @delete-comment='deleteComment($event)'></comment-item>
 
-            <a class="list-group-item list-group-item-action list-group-item-success text-center" data-toggle="collapse" href="#commentForm" role="button" aria-expanded="false" v-show="commentComicData.type == 'addComment'">
+            <a class="list-group-item list-group-item-action list-group-item-success text-center" data-toggle="collapse"
+              href="#commentForm" role="button" aria-expanded="false" v-show="commentComicData.type == 'addComment'">
               我也要留言
             </a>
 
@@ -219,12 +240,22 @@
               <div class="form-group col-md-6">
                 <label for="stars">推薦星數</label>
                 <p>
-                  <span @click='comment.stars = -10' id='start1' class='cursor_pointer' :class="parseInt(comment.stars)<0 ?'text-danger':''">{{parseInt(comment.stars)<0 ?'💀' :'💀'}}</span>
+                  <span @click='comment.stars = -10' id='start1' class='cursor_pointer'
+                    :class="parseInt(comment.stars)<0 ?'text-danger':''">{{parseInt(comment.stars)<0 ?'💀'
+                      :'💀'}}</span>
 
-                  <span @click='comment.stars = 1' id='start1' class='cursor_pointer' :class="parseInt(comment.stars)>=1 ?'text-warning':''">{{parseInt(comment.stars)>=1 ?'★' :'☆'}}</span>
-                  <span @click='comment.stars = 2' id='start2' class='cursor_pointer' :class="parseInt(comment.stars)>=2 ?'text-warning':''">{{parseInt(comment.stars)>=2 ?'★' :'☆'}}</span>
-                  <span @click='comment.stars = 3' id='start3' class='cursor_pointer' :class="parseInt(comment.stars)>=3 ?'text-warning':''">{{parseInt(comment.stars)>=3 ?'★' :'☆'}}</span>
-                  <span>{{(comment.stars < 0)?'（幹你娘雷暴）':''}}{{(comment.stars == 1)?'（不錯看。）':''}}{{(comment.stars == 2)?'（超好看！）':''}}{{(comment.stars == 3)?'（人生必看！！）':''}}</span></p>
+                      <span @click='comment.stars = 1' id='start1' class='cursor_pointer'
+                        :class="parseInt(comment.stars)>=1 ?'text-warning':''">{{parseInt(comment.stars)>=1 ?'★'
+                        :'☆'}}</span>
+                      <span @click='comment.stars = 2' id='start2' class='cursor_pointer'
+                        :class="parseInt(comment.stars)>=2 ?'text-warning':''">{{parseInt(comment.stars)>=2 ?'★'
+                        :'☆'}}</span>
+                      <span @click='comment.stars = 3' id='start3' class='cursor_pointer'
+                        :class="parseInt(comment.stars)>=3 ?'text-warning':''">{{parseInt(comment.stars)>=3 ?'★'
+                        :'☆'}}</span>
+                      <span>{{(comment.stars <
+                          0)?'（幹你娘雷暴）':''}}{{(comment.stars==1)?'（不錯看。）':''}}{{(comment.stars==2)?'（超好看！）':''}}{{(comment.stars==3)?'（人生必看！！）':''}}</span>
+                </p>
 
               </div>
             </div>
@@ -233,12 +264,17 @@
               <input type="text" name="tags" id="tagscomment">
 
               <p>熱門標籤：
-                <button type="button" class="btn btn-sm mr-1 mt-1" :class="parseInt(tag[1]) > 5 ? 'btn-warning' :   (parseInt(tag[1]) > 1 ? 'btn-info' : 'btn-secondary')" v-for="tag in tagsShow" @click="addTagcomment(tag[0])">
+                <button type="button" class="btn btn-sm mr-1 mt-1"
+                  :class="parseInt(tag[1]) > 5 ? 'btn-warning' :   (parseInt(tag[1]) > 1 ? 'btn-info' : 'btn-secondary')"
+                  v-for="tag in tagsShow" @click="addTagcomment(tag[0])">
                   {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
                 </button>
-                <small class="text-muted cursor_pointer" v-show="!comment.tagsShowMoreOrNot" @click='comment.tagsShowMoreOrNot = true'>展開全部…</small>
+                <small class="text-muted cursor_pointer" v-show="!comment.tagsShowMoreOrNot"
+                  @click='comment.tagsShowMoreOrNot = true'>展開全部…</small>
 
-                <button type="button" class="btn btn-sm mr-1 mt-1" :class="parseInt(tag[1]) > 5 ? 'btn-warning' :   (parseInt(tag[1]) > 1 ? 'btn-info' : 'btn-secondary')" v-show="comment.tagsShowMoreOrNot" v-for="tag in tagsHide" @click="addTagcomment(tag[0])">
+                <button type="button" class="btn btn-sm mr-1 mt-1"
+                  :class="parseInt(tag[1]) > 5 ? 'btn-warning' :   (parseInt(tag[1]) > 1 ? 'btn-info' : 'btn-secondary')"
+                  v-show="comment.tagsShowMoreOrNot" v-for="tag in tagsHide" @click="addTagcomment(tag[0])">
                   {{tag[0]}} <span class="badge badge-light">{{tag[1]}}</span>
                 </button>
 
@@ -263,7 +299,8 @@
           <div class="modal-footer">
             <span class="text-danger">{{comment.warning}}</span>
             <button type="button" class="btn btn-secondary" @click="closeComment()">取消</button>
-            <button type="button" class="btn" :class="[ loading? 'btn-secondary': 'btn-primary' ]" id="sendComment" @click="sendComment(commentComicData.type)" :disabled="loading">{{loading?'處理中……':'確定送出'}}</button>
+            <button type="button" class="btn" :class="[ loading? 'btn-secondary': 'btn-primary' ]" id="sendComment"
+              @click="sendComment(commentComicData.type)" :disabled="loading">{{loading?'處理中……':'確定送出'}}</button>
           </div>
         </div>
       </modal-item>
@@ -281,28 +318,35 @@
             <option value="comments">依照評論數量排序</option>
           </select>
           <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" @click="sortType = !sortType" id="button-addon2">{{sortShow}}</button>
+            <button class="btn btn-outline-secondary" type="button" @click="sortType = !sortType"
+              id="button-addon2">{{sortShow}}</button>
           </div>
         </div>
       </div>
       <div class='row'>
-        <comic-card-item @comic-detail-select='opencommentDetail($event)' v-for="(comic,index) in comicsListFilted" :comic="comic" :index="index" :full-width="fullWidth" @tag-select="searchType='tag',searchText=$event" @user-select="searchType='user',searchText=$event">
+        <comic-card-item @comic-detail-select='opencommentDetail($event)' v-for="(comic,index) in comicsListFilted"
+          :comic="comic" :index="index" :full-width="fullWidth" @tag-select="searchType='tag',searchText=$event"
+          @user-select="searchType='user',searchText=$event">
         </comic-card-item>
       </div>
     </div>
 
     <div class="container" v-else-if="nowAtComic == 2">
-      <p v-show="(searchComicsList.length === 0 && !loading) || searchError" :class="searchError?'text-danger':''"> {{searchError?'※燈愣，壓力測試沒過。Google免費伺服超過使用上限了，看看之後會不會好※':'(請於搜尋框內輸入欲新增的漫畫關鍵字)'}} </p>
+      <p v-show="(searchComicsList.length === 0 && !loading) || searchError" :class="searchError?'text-danger':''">
+        {{searchError?'※燈愣，壓力測試沒過。Google免費伺服超過使用上限了，看看之後會不會好※':'(請於搜尋框內輸入欲新增的漫畫關鍵字)'}} </p>
       <div class='row'>
-        <searchcomic-card-item @search-select='openSearchDetail($event)' v-for="(comic,index) in searchComicsList" :comic="comic" :index="index">
+        <searchcomic-card-item @search-select='openSearchDetail($event)' v-for="(comic,index) in searchComicsList"
+          :comic="comic" :index="index">
         </searchcomic-card-item>
       </div>
-      <button class="btn col-md-12 pt-2" v-show="searchComicsList.length != 0" @click="search()" :disabled="loading">{{loading?'讀取中……':'載入更多'}}</button>
+      <button class="btn col-md-12 pt-2" v-show="searchComicsList.length != 0" @click="search()"
+        :disabled="loading">{{loading?'讀取中……':'載入更多'}}</button>
     </div>
 
     <div class="container" v-else-if="nowAtComic == 3">
       <div class='row'>
-        <comment-card-item @comic-detail-select='opencommentDetail($event)' v-for="(comment,index) in commentsR" :comment="comment" :index="index" :comics-list="comicsList" :full-width="fullWidth">
+        <comment-card-item @comic-detail-select='opencommentDetail($event)' v-for="(comment,index) in commentsR"
+          :comment="comment" :index="index" :comics-list="comicsList" :full-width="fullWidth">
         </comment-card-item>
       </div>
     </div>
@@ -314,7 +358,7 @@
 
 
 <script type="text/javascript">
-  window.onload = function() {
+  window.onload = function () {
     Vue.component('navbar-item', {
 
       props: [
@@ -325,12 +369,12 @@
         'dev'
       ],
       computed: {
-        tangLoading: function() {
+        tangLoading: function () {
 
         }
       },
       methods: {
-        openModel: function() {
+        openModel: function () {
           $('#comiccommentModal').modal('show');
         }
       },
@@ -388,7 +432,7 @@
     Vue.component('comic-card-item', {
       props: ['comic', 'index', 'fullWidth'],
       computed: {
-        isNew: function() {
+        isNew: function () {
           var now = new Date();
           var postTime = new Date(this.comic[8]);
           if (parseInt(now - postTime) / 3600000 < 24) return true;
@@ -450,7 +494,7 @@
     Vue.component('comment-card-item', {
       props: ['comment', 'index', 'comicsList', 'fullWidth'],
       computed: {
-        comic: function() {
+        comic: function () {
           var comicId = this.comment[1];
           if (this.comicsList.length == 0) {
             return {
@@ -467,18 +511,18 @@
               "AddTime": "2018-01-21"
             };
           }
-          return this.comicsList.find(function(value) {
+          return this.comicsList.find(function (value) {
             return value[0] == comicId;
           });
         },
-        comicNum: function() {
+        comicNum: function () {
           var comicId = this.comment[1];
           if (this.comicsList.length == 0) {
             return 0;
           }
           var commentArr = this.comicsList.slice(0);
           var commentArr = commentArr.reverse();
-          return commentArr.findIndex(function(value, index) {
+          return commentArr.findIndex(function (value, index) {
             return value[0] == comicId;
           });
         },
@@ -513,7 +557,7 @@
     });
 
     Vue.component('comment-item', {
-      data: function() {
+      data: function () {
         return {
           goDown: false
         }
@@ -521,17 +565,17 @@
 
       props: ['comment', 'index', 'type'],
       methods: {
-        changeComment: function() {
+        changeComment: function () {
           this.goDown = true;
           this.$emit('change-comment', this.comment[0]);
         },
-        deleteComment: function() {
+        deleteComment: function () {
           this.goDown = true;
           this.$emit('delete-comment', this.comment[0]);
         }
       },
       computed: {
-        select: function() {
+        select: function () {
           if (this.type === 'addComment') {
             this.goDown = false;
           }
@@ -569,7 +613,7 @@
     });
 
     Vue.component('modal-item', {
-      data: function() {
+      data: function () {
         return {}
       },
       props: ['modal-id'],
@@ -675,13 +719,13 @@
 
       },
       methods: {
-        openSearchDetail: function(num) {
+        openSearchDetail: function (num) {
           this.searchComicData.select = num;
           if (this.searchComicData.tagsOn === false) {
             $('#tags').tagsInput({
               'unique': true,
               autocomplete: {
-                'source': this.tags.map(function(value) {
+                'source': this.tags.map(function (value) {
                   return value[0];
                 })
               }
@@ -694,7 +738,7 @@
           $('#comicDetailModal').modal('show');
         },
 
-        opencommentDetail: function(num) {
+        opencommentDetail: function (num) {
           this.commentComicData.select = num;
 
           $('#comiccommentModal').modal('show');
@@ -707,7 +751,7 @@
             $('#tagscomment').tagsInput({
               'unique': true,
               autocomplete: {
-                'source': this.tags.map(function(value) {
+                'source': this.tags.map(function (value) {
                   return value[0];
                 })
               }
@@ -725,13 +769,13 @@
         },
 
         // TAG相關
-        addTag: function(tag) {
+        addTag: function (tag) {
           $('#tags').addTag(tag);
         },
-        addTagcomment: function(tag) {
+        addTagcomment: function (tag) {
           $('#tagscomment').addTag(tag);
         },
-        getTags: function() {
+        getTags: function () {
           appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
           var getBody = {
             type: 'searchTags'
@@ -740,19 +784,19 @@
           this.$http.get(appUrl, {
             params: getBody
           }).
-          then(function(res) {
-            //console.log(res);
-            var ajaxData = res.body;
-            this.tags = ajaxData;
-            //console.log(this.tags);
-          }, function() {
-            console.log('請求失敗處理');
-            this.loading = false;
-          });
+            then(function (res) {
+              //console.log(res);
+              var ajaxData = res.body;
+              this.tags = ajaxData;
+              //console.log(this.tags);
+            }, function () {
+              console.log('請求失敗處理');
+              this.loading = false;
+            });
         },
 
         //comment 相關
-        getComments: function() {
+        getComments: function () {
           appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
           this.loading = true;
           var getBody = {
@@ -762,36 +806,36 @@
           this.$http.get(appUrl, {
             params: getBody
           }).
-          then(function(res) {
-            //console.log(res);
-            var ajaxData = res.body;
-            this.comments = ajaxData;
-            //console.log(this.comments);
-            this.loading = false;
-          }, function() {
-            console.log('請求失敗處理');
-            this.loading = false;
-          });
+            then(function (res) {
+              //console.log(res);
+              var ajaxData = res.body;
+              this.comments = ajaxData;
+              //console.log(this.comments);
+              this.loading = false;
+            }, function () {
+              console.log('請求失敗處理');
+              this.loading = false;
+            });
         },
-        closeComment: function() {
+        closeComment: function () {
           this.commentComicData.type = 'addComment';
           this.comment.stars = 0;
           this.comment.userComment = '';
           $('#commentForm').collapse('hide');
         },
-        closeCommentM: function() {
+        closeCommentM: function () {
           $('#comiccommentModal').modal('hide');
         },
 
-        addComment: function() {
+        addComment: function () {
           this.commentComicData.type = 'addComment';
           this.comment.stars = 0;
           this.comment.userComment = '';
           $('#commentForm').collapse('show');
         },
-        changeComment: function(id) {
+        changeComment: function (id) {
           this.commentComicData.type = 'changeComment';
-          var selectComment = this.comments.filter(function(value) {
+          var selectComment = this.comments.filter(function (value) {
             return value[0] == id;
           });
           this.comment.Id = id;
@@ -800,13 +844,13 @@
           this.comment.userComment = selectComment[0][4];
           $('#commentForm').collapse('show');
         },
-        deleteComment: function(id) {
+        deleteComment: function (id) {
           this.commentComicData.type = 'delete';
           this.comment.Id = id;
           $('#commentForm').collapse('show');
         },
 
-        search: function(type) {
+        search: function (type) {
           this.loading = true;
           appUrl = 'https://script.google.com/macros/s/AKfycbzshA7Vgj-ff3dIeizZQhuX7yvNndNCemG1cFTxPWJlliSlA55_/exec';
 
@@ -835,26 +879,26 @@
           this.$http.get(appUrl, {
             params: getBody
           }).
-          then(function(res) {
-            //console.log(res);
-            this.ajaxData = res.body;
-            if (this.nowAtComic == 1 || type == 'reload') {
-              this.comicsList = this.ajaxData;
-            } else {
-              this.searchComicsList = this.searchComicsList.concat(this.ajaxData);
-              this.searchComicData.loadPage++;
-            }
-            this.ajaxData = [];
-            this.loading = false;
+            then(function (res) {
+              //console.log(res);
+              this.ajaxData = res.body;
+              if (this.nowAtComic == 1 || type == 'reload') {
+                this.comicsList = this.ajaxData;
+              } else {
+                this.searchComicsList = this.searchComicsList.concat(this.ajaxData);
+                this.searchComicData.loadPage++;
+              }
+              this.ajaxData = [];
+              this.loading = false;
 
-          }, function() {
-            console.log('請求失敗處理');
-            this.loading = false;
-            this.searchError = true;
-          });
+            }, function () {
+              console.log('請求失敗處理');
+              this.loading = false;
+              this.searchError = true;
+            });
         },
 
-        sendComment: function(type) {
+        sendComment: function (type) {
 
           if (type === 'addComic') {
             this.comment.tags = $('#tags').val();
@@ -924,64 +968,64 @@
             this.$http.post(appUrl, postBody, {
               emulateJSON: true
             }).
-            then(function(res) {
-              //console.log(res);
-              this.loading = false;
+              then(function (res) {
+                //console.log(res);
+                this.loading = false;
 
-              var ajaxData = res.body;
-              if (ajaxData.state === 'success') {
-                this.comment.stars = 0;
-                this.comment.tags = '';
-                this.comment.userComment = '';
-                this.comment.tagsShowMoreOrNot = false;
+                var ajaxData = res.body;
+                if (ajaxData.state === 'success') {
+                  this.comment.stars = 0;
+                  this.comment.tags = '';
+                  this.comment.userComment = '';
+                  this.comment.tagsShowMoreOrNot = false;
 
 
-                this.comment.warning = '';
-                if (type === 'addComic') {
-                  $('#tags').importTags('');
-                  $('#comicDetailModal').modal('hide');
+                  this.comment.warning = '';
+                  if (type === 'addComic') {
+                    $('#tags').importTags('');
+                    $('#comicDetailModal').modal('hide');
+                  } else {
+                    this.commentComicData.type = 'addComment';
+                    this.getTags();
+                    this.getComments();
+                    //this.search('reload');
+                    $('#commentForm').collapse('hide')
+                  }
+                } else if (ajaxData.state === 'duplicated') {
+                  this.comment.warning = '書單裡面已有這本漫畫囉，去留言吧！';
+                } else if (ajaxData.state === 'pwWrong') {
+                  this.comment.warning = '密碼錯誤！';
+                } else if (ajaxData.state === 'noPw') {
+                  this.comment.warning = '文章沒有密碼，修改失敗。';
                 } else {
-                  this.commentComicData.type = 'addComment';
-                  this.getTags();
-                  this.getComments();
-                  //this.search('reload');
-                  $('#commentForm').collapse('hide')
+                  this.comment.warning = ajaxData.state;
                 }
-              } else if (ajaxData.state === 'duplicated') {
-                this.comment.warning = '書單裡面已有這本漫畫囉，去留言吧！';
-              } else if (ajaxData.state === 'pwWrong') {
-                this.comment.warning = '密碼錯誤！';
-              } else if (ajaxData.state === 'noPw') {
-                this.comment.warning = '文章沒有密碼，修改失敗。';
-              } else {
-                this.comment.warning = ajaxData.state;
-              }
-            }, function() {
-              console.log('請求失敗處理');
-              this.loading = false;
-              this.comment.warning = '出現不明錯誤，建議通知阿歐西。';
-            });
+              }, function () {
+                console.log('請求失敗處理');
+                this.loading = false;
+                this.comment.warning = '出現不明錯誤，建議通知阿歐西。';
+              });
           }
 
 
         }
       },
       computed: {
-        commentsR: function() {
+        commentsR: function () {
           var commentArr = this.comments.slice(0);
           return commentArr.reverse();
         },
-        tagsShow: function() {
+        tagsShow: function () {
           var tempArr = this.tags.slice(0);
           tempArr.splice(15);
           return tempArr;
         },
-        tagsHide: function() {
+        tagsHide: function () {
           var tempArr = this.tags.slice(0);
           return tempArr.splice(15);
         },
 
-        reloadOrNot: function() {
+        reloadOrNot: function () {
           if (this.nowAtComic == 1) {
             this.search('reload');
             this.getComments();
@@ -990,18 +1034,18 @@
           }
           return false;
         },
-        commentFlited: function() {
+        commentFlited: function () {
           var commentArr = this.comments.slice(0);
           var ft = this.commentComicData.ft;
           if (this.commentComicData.fType === 'Id') {
             return commentArr.filter(
-              function(value) {
+              function (value) {
                 return (value[1] == ft && value[5] == 0) ? true : false;
               });
           }
           return commentArr;
         },
-        selectSearchData: function() {
+        selectSearchData: function () {
           if (this.searchComicsList.length != 0) {
             return this.searchComicsList[this.searchComicData.select];
           }
@@ -1029,7 +1073,7 @@
 
         },
 
-        selectCommentData: function() {
+        selectCommentData: function () {
           if (this.comicsListFilted.length > this.commentComicData.select) {
             //console.log(this.comicsListFilted);
             var selectComic = this.comicsListFilted[this.commentComicData.select];
@@ -1060,7 +1104,7 @@
             "AddTime": "2018-01-21"
           };
         },
-        sortShow: function() {
+        sortShow: function () {
           if (this.sortBy === 'time') {
             return this.sortType ? '新到舊' : '舊到新';
           } else {
@@ -1068,7 +1112,7 @@
           }
 
         },
-        comicsListFilted: function() {
+        comicsListFilted: function () {
           var comicList = this.comicsList.slice(0);
 
           var text = this.searchText.toLowerCase();
@@ -1077,7 +1121,7 @@
           } else if (this.sortBy === 'stars') {
             comicList.reverse();
             if (this.sortType) {
-              comicList.sort(function(a, b) {
+              comicList.sort(function (a, b) {
                 if (a[5] > b[5]) return -1;
                 else if (a[5] < b[5]) return 1;
                 else if (a[9] > b[9]) return -1;
@@ -1085,7 +1129,7 @@
                 else return 0;
               });
             } else if (!this.sortType) {
-              comicList.sort(function(a, b) {
+              comicList.sort(function (a, b) {
                 if (a[5] > b[5]) return 1;
                 else if (a[5] < b[5]) return -1;
                 else if (a[9] > b[9]) return -1;
@@ -1096,7 +1140,7 @@
           } else if (this.sortBy === 'comments') {
             comicList.reverse();
             if (this.sortType) {
-              comicList.sort(function(a, b) {
+              comicList.sort(function (a, b) {
                 if (a[9] > b[9]) return -1;
                 else if (a[9] < b[9]) return 1;
                 else if (a[5] > b[5]) return -1;
@@ -1104,7 +1148,7 @@
                 else return 0;
               });
             } else if (!this.sortType) {
-              comicList.sort(function(a, b) {
+              comicList.sort(function (a, b) {
                 if (a[9] > b[9]) return 1;
                 else if (a[9] < b[9]) return -1;
                 else if (a[5] > b[5]) return -1;
@@ -1124,17 +1168,17 @@
 
 
           if (this.searchType === 'name') {
-            return comicList.filter(function(value) {
+            return comicList.filter(function (value) {
               var tempBool = (String(value[1]).toLowerCase().indexOf(text) != -1 || String(value[2]).toLowerCase().indexOf(text) != -1);
               return (dis ? !tempBool : tempBool);
             });
           } else if (this.searchType === 'user') {
-            return comicList.filter(function(value) {
+            return comicList.filter(function (value) {
               var tempBool = String(value[3]).toLowerCase().indexOf(text) != -1;
               return (dis ? !tempBool : tempBool);
             });
           } else if (this.searchType === 'tag') {
-            return comicList.filter(function(value) {
+            return comicList.filter(function (value) {
               var tempBool = String(value[4]).toLowerCase().indexOf(text) != -1;
               return (dis ? !tempBool : tempBool);
             });
