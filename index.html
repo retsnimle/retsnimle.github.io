@@ -4,6 +4,11 @@
   <title>湯群漫畫推薦網
   </title>
 
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
     integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Noto+Sans+TC|Noto+Serif+TC" rel="stylesheet">
@@ -194,8 +199,7 @@
             <img class="col-4" :src="selectCommentData.BigPic" alt="Generic placeholder image">
             <div class="media-body">
               <h5 class="mt-0">{{selectCommentData.Title}}</h5>
-              <p>{{selectCommentData.Author}} <a :href="selectCommentData.Url"
-                  target="_blank">漫畫連結</a></p>
+              <p>{{selectCommentData.Author}} <a :href="selectCommentData.Url" target="_blank">漫畫連結</a></p>
               <p class="card-subtitle mb-2 text-muted">推薦人：<span class="cursor_pointer"
                   @click="userNameC = selectCommentData.userName,searchText=userNameC,searchType='user',closeCommentM()">{{selectCommentData.userName}}</span>
 
