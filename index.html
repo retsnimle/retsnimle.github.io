@@ -24,7 +24,8 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+  <!-- <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.3"></script>
   <!-- <script src="jquery.tagsinput.js"></script>
   <link rel="stylesheet" type="text/css" href="jquery.tagsinput.css" /> -->
   <script src="jquery.tagsinput-revisited.js"></script>
@@ -37,7 +38,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <script>Vue.use(VueLazyload)</script>
+  <script>
+
+    Vue.use(VueLazyload)
+    Vue.http.interceptors.push((request, next) => {
+      let timeout;
+      console.log('設定超時攔截');
+      // 這裡改用 _timeout
+      if (request._timeout) {
+        timeout = setTimeout(() => {
+          console.log('設定超時：' + request._timeout);
+          //自定义响应体 status:408,statustext:"请求超时"，并返回给下下边的next
+          next(request.respondWith(request.body, {
+            status: 408,
+            statusText: '请求超时'
+          }));
+
+        }, request._timeout);
+      }
+      next((response) => {
+        console.log(response.status)//如果超时输出408
+        return response;
+      })
+    });
+  </script>
 
   <style media="screen">
     body {
@@ -336,8 +360,9 @@
     </div>
 
     <div class="container" v-else-if="nowAtComic == 2">
-      <p v-show="(searchComicsList.length === 0 && !loading) || searchError" :class="searchError?'text-danger':''">
-        {{searchError?'※燈愣，壓力測試沒過。Google免費伺服超過使用上限了，看看之後會不會好※':'(請於搜尋框內輸入欲新增的漫畫關鍵字)'}} </p>
+      <!-- v-show="(searchComicsList.length === 0 && !loading) || searchError" -->
+      <p :class="searchError?'text-danger':''">
+        {{searchError?'※燈愣，漫畫櫃可能又調皮了，再搜尋一次看看※':'(請於搜尋框內輸入欲新增的漫畫關鍵字，如果圈圈轉很久，再按一次。)'}} </p>
       <div class='row'>
         <searchcomic-card-item @search-select='openSearchDetail($event)' v-for="(comic,index) in searchComicsList"
           :comic="comic" :index="index">
@@ -881,7 +906,8 @@
 
           //發送get請求
           this.$http.get(appUrl, {
-            params: getBody
+            params: getBody,
+            _timeout: 10000
           }).
             then(function (res) {
               //console.log(res);
@@ -895,8 +921,9 @@
               this.ajaxData = [];
               this.loading = false;
 
-            }, function () {
+            }, function (response) {
               console.log('請求失敗處理');
+              console.log(response.status)
               this.loading = false;
               this.searchError = true;
             });
