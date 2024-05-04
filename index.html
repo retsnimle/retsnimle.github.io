@@ -339,6 +339,9 @@
     <!-- 主要顯示頁面在此 -->
     <div class="container" v-if="reloadOrNot">
       <div class='row'>
+        <div class="col-12">
+          <h5 class="text-center">湯群漫畫推薦網有新網址了，之後這裏會廢棄，請改到<a href="https://retsnimle.github.io/TQMHTJ/" target="_blank">新網址</a></h5>
+        </div>
         <div class="input-group mx-1 mt-1">
           <select class="custom-select" v-model='sortBy'>
             <option value="time">依照建立時間排序</option>
@@ -907,7 +910,7 @@
           //發送get請求
           this.$http.get(appUrl, {
             params: getBody,
-            _timeout: 10000
+            _timeout: 5000
           }).
             then(function (res) {
               //console.log(res);
